@@ -6,7 +6,8 @@ import javax.swing.*;
 public class JavaCVTest {
     @Test
     public void testCamera() throws InterruptedException, FrameGrabber.Exception {
-        OpenCVFrameGrabber grabber = new OpenCVFrameGrabber(0);
+       OpenCVFrameGrabber grabber = new OpenCVFrameGrabber(0);
+      //  OpenCVFrameGrabber grabber = new OpenCVFrameGrabber("rtsp://admin:hik12345@192.168.0.122:554/h264/ch1/main/av_stream");
         grabber.start();   //开始获取摄像头数据
         CanvasFrame canvas = new CanvasFrame("摄像头");//新建一个窗口
         canvas.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -26,7 +27,8 @@ public class JavaCVTest {
 
     @Test
     public void testCamera1() throws FrameGrabber.Exception, InterruptedException {
-        VideoInputFrameGrabber grabber = VideoInputFrameGrabber.createDefault(0);
+        VideoInputFrameGrabber grabber = VideoInputFrameGrabber.createDefault("rtsp://admin:hik12345@192.168.0.122:554/h264/ch1/main/av_stream");
+      //  VideoInputFrameGrabber grabber = VideoInputFrameGrabber.createDefault(0);
         grabber.start();
         CanvasFrame canvasFrame = new CanvasFrame("摄像头");
         canvasFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
