@@ -2,6 +2,8 @@ package com.example.shengtingapi.test;
 
 import com.alibaba.fastjson.JSON;
 import com.example.shengtingapi.controller.BaseController;
+import com.example.shengtingapi.db.mongo.entity.ClusterInfo;
+import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
 import com.example.shengtingapi.dto.*;
 import com.example.shengtingapi.util.MapUrlParamsUtils;
 
@@ -12,6 +14,9 @@ import java.util.Map;
 
 public class TestOne {
     public static void main(String[] args) {
+        String str = "{statisticsTime:222}";
+        JSON.parseObject(str, ClusterStatistics.class);
+
         Map param = new HashMap();
         List data = new ArrayList<>();
         Image image = new Image();
@@ -25,7 +30,7 @@ public class TestOne {
 
         System.out.println( JSON.toJSONString(param));
 
-        System.out.println(BaseController.BatchDetectAndExtract.replaceAll("\\{feature_version}",BaseController.FEATURE_VERSION));
+        System.out.println(BaseController.BatchDetectAndExtract.replaceAll("\\{feature_version}",BaseController.FEATURE_VERSION+""));
 
 
         Period period = new Period("2017-01-01T10:00:20.021Z", "2019-10-01T10:00:20.021Z");

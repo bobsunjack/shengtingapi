@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/shangtang")
+@RequestMapping(value = "/shangtang1")
 public class TestController extends BaseController {
 
     @RequestMapping(value = "/batchExtract")
@@ -56,7 +56,7 @@ public class TestController extends BaseController {
         ImageExtract imageExtract = new ImageExtract("LargestFace", image);
         data.add(imageExtract);
         param.put("requests", data);
-        param.put("detect_mode", "detect_mode");
+        param.put("detect_mode", "Default");
         String jsonParam = JSON.toJSONString(param);
         logger.error("param:" + jsonParam);
         return jsonParam;
@@ -77,8 +77,9 @@ public class TestController extends BaseController {
         return "{error:\"error\"}";
     }
     @RequestMapping(value = "/clusterGet2")
-    public Object clusterGet2(Integer page) {
+    public Object clusterGet2(Integer page,String clusterId) {
         try {
+            BaseController.CLUSTER_ID = clusterId;
             String param = searchGetParam2(page);
             String url = realUrlClusterGet(ClusterGet) + "?" + param;
             logger.error("get:"+url);
@@ -120,7 +121,8 @@ public class TestController extends BaseController {
     @RequestMapping(value = "/clusterSearch")
     public Object clusterSearch(Integer top) {
         try {
-            String param = clusterSearchParam(top);
+            String imageStr = toImgeString();
+            String param = clusterSearchParam(top,imageStr);
             String url = realUrlClusterGet(ClusterSearch);
             String result = HttpClientUtil.postByStringJson(param, url, null);
             logger.error("extract:" + result);
@@ -131,8 +133,7 @@ public class TestController extends BaseController {
         return "{error:\"error\"}";
     }
 
-    private String clusterSearchParam(Integer top) throws IOException {
-        String imageStr = toImgeString();
+    private String clusterSearchParam(Integer top,String imageStr) throws IOException {
         Feature feature = new Feature(imageStr);
         Config config = new Config(top);
         ClusterSearch clusterSearch = new ClusterSearch(feature, config);
@@ -164,5 +165,59 @@ public class TestController extends BaseController {
         String jsonParam = MapUrlParamsUtils.getUrlParamsByMap(map);
         logger.error("param:" + jsonParam);
         return jsonParam;
+    }
+
+
+    @RequestMapping(value = "/search")
+    public Object search(Integer top) {
+        try {
+            String imageStr = toImgeString();
+
+            String param = extractParam(imageStr);
+            String url = realUrl(BatchDetectAndExtract);
+            String content = HttpClientUtil.postByStringJson(param, url, null);
+            logger.error("extract:" + content);
+
+            int begin = content.indexOf("blob") + 7;
+            int end = content.indexOf("\"",begin) ;
+            imageStr = content.substring(begin, end);
+            System.out.println();
+            param = clusterSearchParam(top,imageStr);
+            url = realUrlClusterGet(ClusterSearch);
+            String result = HttpClientUtil.postByStringJson(param, url, null);
+            logger.error("extract:" + result);
+            return result;
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return "{error:\"error\"}";
+    }
+
+    @RequestMapping(value = "/clusterGet3")
+    public Object clusterGet3(Integer begin,Integer size) {
+        try {
+            Integer page=0;
+            String clusterId;
+            String result="";
+            long beginTime = System.currentTimeMillis();
+            Integer total=size+begin;
+            for(int i=begin;i<total;i++) {
+                BaseController.CLUSTER_ID = i+"";
+                String param = searchGetParam2(page);
+                String url = realUrlClusterGet(ClusterGet) + "?" + param;
+                logger.error("get:" + url);
+                result = HttpClientUtil.getByUrl2(url, null);
+                if(result==null){
+                    logger.error("-----------------null:"+i);
+                    total++;
+                    continue;
+                }
+                logger.error("extract:" + result);
+            }
+            return (System.currentTimeMillis()-beginTime)/1000+"秒:"+result;
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+        return "{error:\"error\"}";
     }
 }

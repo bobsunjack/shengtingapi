@@ -78,6 +78,11 @@ public class HttpClientUtil {
         addHeads(httpGet, paramHeads);
         return get(httpGet);
     }
+    public static String getByUrl2(String requestUrl, Map<String, String> paramHeads) throws IOException {
+        HttpGet httpGet = new HttpGet( requestUrl);
+        addHeads(httpGet, paramHeads);
+        return get2(httpGet);
+    }
 
     public static String chuckHttpEntity(HttpEntity httpEntity) throws IOException {
         InputStream inputStream= httpEntity.getContent();
@@ -141,6 +146,8 @@ public class HttpClientUtil {
                 } else {
                     logger.error("error url:"+httpPost.toString());
                     strRequest = "Error Response" + closeableHttpResponse.getStatusLine().getStatusCode();
+                    HttpEntity httpEntity = closeableHttpResponse.getEntity();
+                    strRequest = EntityUtils.toString(httpEntity,"utf-8");
                 }
             }
             return strRequest;
@@ -224,6 +231,47 @@ public class HttpClientUtil {
                     HttpEntity httpEntity = closeableHttpResponse.getEntity();
                     result=  EntityUtils.toString(httpEntity, "UTF-8");
                 } else {
+                    HttpEntity httpEntity = closeableHttpResponse.getEntity();
+                    result=  EntityUtils.toString(httpEntity, "UTF-8");
+                    logger.error("error url:"+httpGet.toString());
+                }
+            }
+            return result;
+        } catch (ClientProtocolException e) {
+            logger.error("协议异常",e);
+            return null;
+        } catch (ParseException e) {
+            logger.error("解析异常",e);
+            return null;
+        } catch (IOException e) {
+            logger.error("传输异常",e);
+            return null;
+        } finally {
+            try {
+                if (closeableHttpClient != null) {
+                    closeableHttpClient.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    private static String get2(HttpGet httpGet) {
+        CloseableHttpClient closeableHttpClient = getClient();
+        try {
+            //执行 post请求
+            CloseableHttpResponse closeableHttpResponse = closeableHttpClient.execute(httpGet);
+            String result=null;
+            if (null != closeableHttpResponse && !"".equals(closeableHttpResponse)) {
+                System.out.println(closeableHttpResponse.getStatusLine().getStatusCode());
+                if (closeableHttpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    HttpEntity httpEntity = closeableHttpResponse.getEntity();
+                    result=  EntityUtils.toString(httpEntity, "UTF-8");
+                } else {
+                   /* HttpEntity httpEntity = closeableHttpResponse.getEntity();
+                    result=  EntityUtils.toString(httpEntity, "UTF-8");*/
                     logger.error("error url:"+httpGet.toString());
                 }
             }

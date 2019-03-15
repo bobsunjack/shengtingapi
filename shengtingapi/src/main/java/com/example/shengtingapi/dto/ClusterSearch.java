@@ -3,9 +3,11 @@ package com.example.shengtingapi.dto;
 import com.example.shengtingapi.controller.BaseController;
 
 public class ClusterSearch {
-    private String load_mode = "CLUSTER_LOAD_ALL";
+    private String load_mode = "CLUSTER_LOAD_PREVIEW";
     private Feature feature;
     private Config config;
+    private Integer max_preview_load_count = 4;
+
 
     public ClusterSearch(Feature feature, Config config) {
         this.feature = feature;
@@ -35,4 +37,5 @@ public class ClusterSearch {
     public void setConfig(Config config) {
         this.config = config;
     }
+
 }

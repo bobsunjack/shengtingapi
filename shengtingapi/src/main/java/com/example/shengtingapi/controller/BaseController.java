@@ -14,30 +14,30 @@ import java.util.Map;
 
 
 public class BaseController {
-    public static String BASEURL = "http://localhost:9191/test";
-    public static String FEATURE_VERSION = "1";
+    public static String BASEURL = "http://41.189.38.87:30080";
+    public static Integer FEATURE_VERSION = 24602;
     public static String OBJECT_TYPE = "face";
     public static String CLUSTER_ID = "1";
-    public static String TEST_IMG = "D:/652901199004282543.jpg";
-    public static Integer PAGE_LIMIT = 30;
+    public static String TEST_IMG = "D:/a.jpg";
+    public static Integer PAGE_LIMIT = 1;
     public Logger logger = LoggerFactory.getLogger(getClass());
 
     public static String BatchDetectAndExtract =BASEURL+"/engine/image-process/face_{feature_version}/v1/batch_detect_and_extract";
-
+   ///搜索
     public static String ClusterSearch =BASEURL+"/engine/timespace-feature/{object_type}_{feature_version}/v2/clusters/search";
-
+///一人一档
     public static String ClusterGet =BASEURL+"/engine/timespace-feature/{object_type}_{feature_version}/v2/clusters/{cluster_id}";
 
     public static String SYSTEMINFO =BASEURL+"/engine/timespace-feature/{object_type}_{feature_version}/v2/get_system_info";
 
     public  String realUrl(String url){
-        String realUrl = url.replaceAll("\\{feature_version}", FEATURE_VERSION);
+        String realUrl = url.replaceAll("\\{feature_version}", FEATURE_VERSION+"");
         logger.error("url:" + realUrl);
         return realUrl;
     }
 
     public  String realUrlClusterGet(String url){
-        String realUrl = url.replaceAll("\\{feature_version}", FEATURE_VERSION);
+        String realUrl = url.replaceAll("\\{feature_version}", FEATURE_VERSION+"");
         realUrl = realUrl.replaceAll("\\{object_type}", OBJECT_TYPE);
         realUrl = realUrl.replaceAll("\\{cluster_id}", CLUSTER_ID);
         logger.error("url:" + realUrl);

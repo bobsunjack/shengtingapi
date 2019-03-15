@@ -6,7 +6,7 @@ public class ClusterGet {
     private String cluster_id= BaseController.CLUSTER_ID;
     private boolean ignore_centroid;
     private String object_type=BaseController.OBJECT_TYPE;
-    private String feature_version=BaseController.FEATURE_VERSION;
+    private Integer feature_version=BaseController.FEATURE_VERSION;
     private Page page;
     private Period period;
 
@@ -39,11 +39,11 @@ public class ClusterGet {
         this.object_type = object_type;
     }
 
-    public String getFeature_version() {
+    public Integer getFeature_version() {
         return feature_version;
     }
 
-    public void setFeature_version(String feature_version) {
+    public void setFeature_version(Integer feature_version) {
         this.feature_version = feature_version;
     }
 

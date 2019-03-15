@@ -4,7 +4,7 @@ import com.example.shengtingapi.controller.BaseController;
 
 public class Feature {
     public String type= BaseController.OBJECT_TYPE;
-    public String version=BaseController.FEATURE_VERSION;
+    public Integer version=BaseController.FEATURE_VERSION;
     public String blob;
     public Feature(String blob) {
         this.blob = blob;
@@ -18,11 +18,11 @@ public class Feature {
         this.type = type;
     }
 
-    public String getVersion() {
+    public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
