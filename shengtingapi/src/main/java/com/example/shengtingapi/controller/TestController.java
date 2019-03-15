@@ -1,10 +1,14 @@
 package com.example.shengtingapi.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.db.mongo.dao.CameraInfoRepository;
+import com.example.shengtingapi.db.mongo.entity.CameraInfo;
 import com.example.shengtingapi.dto.*;
+import com.example.shengtingapi.test.TestFile2;
 import com.example.shengtingapi.util.HttpClientUtil;
 import com.example.shengtingapi.util.MapUrlParamsUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +23,26 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/shangtang1")
 public class TestController extends BaseController {
+    @Autowired
+    CameraInfoRepository cameraInfoRepository;
+
+
+    @RequestMapping(value = "/mongoinit")
+    public Object mongoinit() {
+        List<String> items= TestFile2.toArrayByFileReader1("E:\\TEST\\runoob.txt");
+        for (String item : items) {
+            String unit[] = item.split("\t");
+            CameraInfo info = new CameraInfo();
+            info.setCameraName(unit[0]);
+            info.setCameraId(unit[1]);
+            info.setRegionId(unit[2]);
+            info.setRegionName(unit[3]);
+            info.setArea(unit[4]);
+            cameraInfoRepository.save(info);
+        }
+        return "success" + items.size();
+    }
+
 
     @RequestMapping(value = "/batchExtract")
     public Object batchExtract() {

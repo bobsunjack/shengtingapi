@@ -19,6 +19,15 @@ public class ClusterInfo {
     private String RegionName;
     private Double Lat;
     private Double Lng;
+    private String Area;
+
+    public String getArea() {
+        return Area;
+    }
+
+    public void setArea(String area) {
+        Area = area;
+    }
 
     public Double getLat() {
         return Lat;

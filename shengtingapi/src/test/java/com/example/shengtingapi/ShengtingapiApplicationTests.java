@@ -1,15 +1,20 @@
 package com.example.shengtingapi;
 
+import com.example.shengtingapi.db.mongo.dao.CameraInfoRepository;
 import com.example.shengtingapi.db.mongo.dao.ClusterInfoRepository;
 import com.example.shengtingapi.db.mongo.dao.ClusterStatisticsRepository;
+import com.example.shengtingapi.db.mongo.entity.CameraInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
+import com.example.shengtingapi.test.TestFile2;
 import com.example.shengtingapi.util.UuidUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -21,7 +26,10 @@ public class ShengtingapiApplicationTests {
     @Autowired
     ClusterInfoRepository clusterInfoRepository;
 
-    @Test
+    @Autowired
+    CameraInfoRepository cameraInfoRepository;
+
+   // @Test
     public void contextLoads() {
         ClusterStatistics clusterStatistics = new ClusterStatistics();
         clusterStatistics.setId(UuidUtil.get32UUID());
@@ -43,7 +51,30 @@ public class ShengtingapiApplicationTests {
         clusterInfo.setRegionName("西湖");
         clusterInfo.setLat(39.916527);
         clusterInfo.setLng(116.397128);
+        clusterInfo.setArea("杭州");
         clusterInfoRepository.save(clusterInfo);
+    }
+
+
+    //@Test
+    public void contextLoads2() {
+        List<String> items= TestFile2.toArrayByFileReader1("E:\\TEST\\runoob.txt");
+        for (String item : items) {
+            String unit[] = item.split("\t");
+            CameraInfo info = new CameraInfo();
+            info.setCameraName(unit[0]);
+            info.setCameraId(unit[1]);
+            info.setRegionId(unit[2]);
+            info.setRegionName(unit[3]);
+            info.setArea(unit[4]);
+            cameraInfoRepository.save(info);
+        }
+
+    }
+    @Test
+    public void contextLoads3() {
+      List<CameraInfo> cameraInfoList= cameraInfoRepository.findAll();
+        System.out.println(cameraInfoList.size());
     }
 
 }
