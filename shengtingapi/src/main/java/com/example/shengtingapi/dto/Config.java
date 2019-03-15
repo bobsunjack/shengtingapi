@@ -8,6 +8,10 @@ public class Config {
     public Config(Integer top_k) {
         this.top_k = top_k;
     }
+    public Config(Integer top_k,Float min_score) {
+        this.top_k = top_k;
+        this.min_score = min_score;
+    }
 
     public Float getMin_score() {
         return min_score;

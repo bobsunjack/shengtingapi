@@ -49,13 +49,13 @@ public class MockController extends BaseController {
     @RequestMapping(value = "/clusterStatistic")
    public Object clusterStatistic(@RequestBody BaseJson baseJson){
         try {
-            Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
-            Criteria criteria=  Criteria.where("StatisticsTime").is(qtime);
+            //Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
+          //  Criteria criteria=  Criteria.where("StatisticsTime").is(baseJson.getQtime());
             Query query = new Query(
-                    Criteria.where("StatisticsTime").is(qtime));
+                    Criteria.where("StatisticsTime").is(baseJson.getQtime()));
             ClusterStatistics clusterStatistics= mongoTemplate.findOne(query, ClusterStatistics.class);
             return new RestResult<>(clusterStatistics);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new RestResult("异常出错");
@@ -78,7 +78,10 @@ public class MockController extends BaseController {
                 matchCondition.and("ClusterTotal").gte(baseJson.getClusterTotal());
             }*/
 
-            Criteria matchCondition=Criteria.where("ClusterTotal").gte(baseJson.getClusterTotal());
+            Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getBeginClusterTotal());
+            if (baseJson.getEndClusterTotal() != null) {
+                matchCondition.lt(baseJson.getBeginClusterTotal());
+            }
 
             String orderField = baseJson.getOrderField()!=null ? baseJson.getOrderField() : "CaptureTime";
             if(baseJson.getOrderType().equals("-1")){
@@ -139,6 +142,8 @@ public class MockController extends BaseController {
             result.setRegionId("222");
             result.setCamerName("探点1");
             result.setRegionName("测试");
+            result.setLat("39.916527");
+            result.setLng("116.397128");
             List list = new ArrayList();
             list.add(result);
             return new RestResult<>(list);

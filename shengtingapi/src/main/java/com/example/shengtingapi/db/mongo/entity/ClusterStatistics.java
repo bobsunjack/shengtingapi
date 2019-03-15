@@ -8,7 +8,7 @@ public class ClusterStatistics {
     @Id
     private String id;
     private Long CaptureTotal;
-    private Long StatisticsTime;
+    private String StatisticsTime;
     private Long ClusterTotal;
 
     public String getId() {
@@ -27,11 +27,11 @@ public class ClusterStatistics {
         CaptureTotal = captureTotal;
     }
 
-    public Long getStatisticsTime() {
+    public String getStatisticsTime() {
         return StatisticsTime;
     }
 
-    public void setStatisticsTime(Long statisticsTime) {
+    public void setStatisticsTime(String statisticsTime) {
         StatisticsTime = statisticsTime;
     }
 

@@ -27,10 +27,10 @@ public class ShengtingapiApplicationTests {
         clusterStatistics.setId(UuidUtil.get32UUID());
         clusterStatistics.setCaptureTotal(3l);
         clusterStatistics.setClusterTotal(4l);
-        clusterStatistics.setStatisticsTime(1552623132L);
+        clusterStatistics.setStatisticsTime("2018-01-02");
         clusterStatisticsRepository.save(clusterStatistics);
 
-        ClusterInfo clusterInfo = new ClusterInfo();
+        /*ClusterInfo clusterInfo = new ClusterInfo();
         clusterInfo.setId(UuidUtil.get32UUID());
         clusterInfo.setCamerId("2");
         clusterInfo.setCamerName("test");
@@ -44,7 +44,7 @@ public class ShengtingapiApplicationTests {
         clusterInfo.setRegionName("西湖");
         clusterInfo.setLat("39.916527");
         clusterInfo.setLng("116.397128");
-        clusterInfoRepository.save(clusterInfo);
+        clusterInfoRepository.save(clusterInfo);*/
     }
 
 }

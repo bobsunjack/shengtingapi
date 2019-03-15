@@ -1,13 +1,15 @@
 package com.example.shengtingapi.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.example.shengtingapi.db.mongo.entity.ClusterInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
 import com.example.shengtingapi.db.mongo.service.MongoService;
-import com.example.shengtingapi.dto.RestResult;
+import com.example.shengtingapi.dto.*;
 import com.example.shengtingapi.json.BaseJson;
 import com.example.shengtingapi.response.wrap.ClusterGetResult;
 import com.example.shengtingapi.response.wrap.ClusterSearchResult;
 import com.example.shengtingapi.util.DateUtil;
+import com.example.shengtingapi.util.HttpClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -21,9 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -40,11 +45,11 @@ public class ReleaseController extends BaseController {
     @RequestMapping(value = "/clusterStatistic")
     public Object clusterStatistic(@RequestBody BaseJson baseJson) {
         try {
-            Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
-            Criteria criteria = Criteria.where("StatisticsTime").is(qtime);
+            //Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
+            //  Criteria criteria=  Criteria.where("StatisticsTime").is(baseJson.getQtime());
             Query query = new Query(
-                    Criteria.where("StatisticsTime").is(qtime));
-            ClusterStatistics clusterStatistics = mongoTemplate.findOne(query, ClusterStatistics.class);
+                    Criteria.where("StatisticsTime").is(baseJson.getQtime()));
+            ClusterStatistics clusterStatistics= mongoTemplate.findOne(query, ClusterStatistics.class);
             return new RestResult<>(clusterStatistics);
         } catch (Exception e) {
            logger.error("",e);
@@ -68,8 +73,11 @@ public class ReleaseController extends BaseController {
             if(baseJson.getClusterTotal()!=null){
                 matchCondition.and("ClusterTotal").gte(baseJson.getClusterTotal());
             }*/
+            Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getBeginClusterTotal());
+            if (!baseJson.getEndClusterTotal().equals(-1)) {
+                matchCondition.lt(baseJson.getBeginClusterTotal());
+            }
 
-            Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getClusterTotal());
 
             String orderField = baseJson.getOrderField() != null ? baseJson.getOrderField() : "CaptureTime";
             if (baseJson.getOrderType().equals("-1")) {
@@ -99,21 +107,49 @@ public class ReleaseController extends BaseController {
     @RequestMapping(value = "/imageSearch")
     public Object imageSearch(@RequestBody BaseJson baseJson) {
         try {
-            ClusterSearchResult result = new ClusterSearchResult();
-            result.setCamerId("22");
-            result.setCaptureTime("2019-03-01T00:45:11Z");
-            result.setClusterId("33");
-            result.setImgBigUrl("http://a.jpg");
-            result.setImgUrl("http://b.jpg");
-            result.setRegionId("222");
-            result.setScore("0.9");
-            List list = new ArrayList();
-            list.add(result);
-            return new RestResult<>(list);
+
+            String param = extractParam(baseJson.getImageBlob());
+            String url = realUrl(BatchDetectAndExtract);
+            String content = HttpClientUtil.postByStringJson(param, url, null);
+            logger.error("extract:" + content);
+
+            int begin = content.indexOf("blob") + 7;
+            int end = content.indexOf("\"",begin) ;
+            String imageStr = content.substring(begin, end);
+            System.out.println();
+            param = clusterSearchParam(baseJson.getTop(),imageStr,baseJson.getScore());
+            url = realUrlClusterGet(ClusterSearch);
+            String result = HttpClientUtil.postByStringJson(param, url, null);
+
+            return new RestResult<>(result);
         } catch (Exception e) {
             logger.error("",e);
         }
         return new RestResult("异常出错");
+    }
+    private String clusterSearchParam(Integer top,String imageStr,Float score) throws IOException {
+        Feature feature = new Feature(imageStr);
+        Config config = new Config(top,score);
+        ClusterSearch clusterSearch = new ClusterSearch(feature, config);
+        String jsonParam = JSON.toJSONString(clusterSearch);
+        logger.error("param:" + jsonParam);
+        return jsonParam;
+    }
+
+    private String extractParam(String imageStr) {
+        Map param = new HashMap();
+        List data = new ArrayList<>();
+        Image image = new Image();
+        image.setData(imageStr);
+        image.setFormat(null);
+        image.setUrl(null);
+        ImageExtract imageExtract = new ImageExtract("LargestFace", image);
+        data.add(imageExtract);
+        param.put("requests", data);
+        param.put("detect_mode", "Default");
+        String jsonParam = JSON.toJSONString(param);
+        logger.error("param:" + jsonParam);
+        return jsonParam;
     }
 
     @RequestMapping(value = "/onePersonList")

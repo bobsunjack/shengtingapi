@@ -3,13 +3,13 @@ package com.example.shengtingapi.response.clustersearch;
 import java.util.List;
 
 public class ClusterSearchResponse {
-    private List<ClusterResponse> results;
+    private List<ClusterListResponse> clusters;
 
-    public List<ClusterResponse> getResults() {
-        return results;
+    public List<ClusterListResponse> getClusters() {
+        return clusters;
     }
 
-    public void setResults(List<ClusterResponse> results) {
-        this.results = results;
+    public void setClusters(List<ClusterListResponse> clusters) {
+        this.clusters = clusters;
     }
 }

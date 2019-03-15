@@ -8,23 +8,24 @@ public class ClusterGetResult {
     private String imgBigUrl;
     private String camerName;
     private String regionName;
-    private String Lat;
-    private String Lng;
+    private String lat;
+    private String lng;
+
 
     public String getLat() {
-        return Lat;
+        return lat;
     }
 
     public void setLat(String lat) {
-        Lat = lat;
+        this.lat = lat;
     }
 
     public String getLng() {
-        return Lng;
+        return lng;
     }
 
     public void setLng(String lng) {
-        Lng = lng;
+        this.lng = lng;
     }
 
     public String getCamerName() {

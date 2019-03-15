@@ -1,12 +1,15 @@
 package com.example.shengtingapi.response.clustersearch;
 
 import com.example.shengtingapi.response.base.ObjectId;
+import com.example.shengtingapi.response.base.PanoramicImage;
+import com.example.shengtingapi.response.base.PortraitImage;
 
 public class ClusterResponse {
     private ObjectId object_id;
-    private String portrait_image;
-    private String panoramic_image;
+    private PortraitImage portrait_image;
+    private PanoramicImage panoramic_image;
     private String score;
+
 
     public ObjectId getObject_id() {
         return object_id;
@@ -16,19 +19,19 @@ public class ClusterResponse {
         this.object_id = object_id;
     }
 
-    public String getPortrait_image() {
+    public PortraitImage getPortrait_image() {
         return portrait_image;
     }
 
-    public void setPortrait_image(String portrait_image) {
+    public void setPortrait_image(PortraitImage portrait_image) {
         this.portrait_image = portrait_image;
     }
 
-    public String getPanoramic_image() {
+    public PanoramicImage getPanoramic_image() {
         return panoramic_image;
     }
 
-    public void setPanoramic_image(String panoramic_image) {
+    public void setPanoramic_image(PanoramicImage panoramic_image) {
         this.panoramic_image = panoramic_image;
     }
 

@@ -15,6 +15,25 @@ public class BaseJson {
     private Float score;  //匹配度
     private String clusterId;
 
+    private Long beginClusterTotal;  //归档总数
+    private Long endClusterTotal;  //归档总数
+
+    public Long getBeginClusterTotal() {
+        return beginClusterTotal;
+    }
+
+    public void setBeginClusterTotal(Long beginClusterTotal) {
+        this.beginClusterTotal = beginClusterTotal;
+    }
+
+    public Long getEndClusterTotal() {
+        return endClusterTotal;
+    }
+
+    public void setEndClusterTotal(Long endClusterTotal) {
+        this.endClusterTotal = endClusterTotal;
+    }
+
     public String getClusterId() {
         return clusterId;
     }

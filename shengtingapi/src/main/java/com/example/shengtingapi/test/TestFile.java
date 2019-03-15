@@ -1,6 +1,9 @@
 package com.example.shengtingapi.test;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.response.clusterget.ClusterGetResponse;
+import com.example.shengtingapi.response.clustersearch.ClusterResponse;
+import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,14 +11,23 @@ import java.io.IOException;
 
 public class TestFile {
     public static void main(String[] args) throws IOException {
-        byte[] bytes = getContent("I:\\log\\search.txt");
-        String content = new String(bytes);
+       // byte[] bytes = getContent("I:\\log\\search.txt");
+        /*byte[] bytes = getContent("I:\\log\\s1.txt");
+        String content = new String(bytes);*/
       /*  int begin = content.indexOf("blob") + 7;
         int end = content.indexOf("\"",begin) ;
         System.out.println(content.substring(begin,end));*/
-      Object obj=  JSON.parse(content);
 
+     /*   byte[] bytes = getContent("I:\\log\\s1.txt");
+        String content = new String(bytes);
+        ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
+        System.out.println(obj);*/
 
+        byte[] bytes = getContent("I:\\log\\getclass.txt");
+        String content = new String(bytes);
+        ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
+        obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
+        System.out.println(obj);
     }
 
 

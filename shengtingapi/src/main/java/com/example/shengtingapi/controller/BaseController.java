@@ -30,6 +30,8 @@ public class BaseController {
 
     public static String SYSTEMINFO =BASEURL+"/engine/timespace-feature/{object_type}_{feature_version}/v2/get_system_info";
 
+    public static String PORTRAIT_IMAGE_PREX = "http://41.189.38.87:30900/api/components/osg-default/_/";
+
     public  String realUrl(String url){
         String realUrl = url.replaceAll("\\{feature_version}", FEATURE_VERSION+"");
         logger.error("url:" + realUrl);
