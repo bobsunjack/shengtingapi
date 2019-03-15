@@ -6,6 +6,10 @@ import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
 import com.example.shengtingapi.db.mongo.service.MongoService;
 import com.example.shengtingapi.dto.*;
 import com.example.shengtingapi.json.BaseJson;
+import com.example.shengtingapi.response.clustersearch.ClusterListResponse;
+import com.example.shengtingapi.response.clustersearch.ClusterResponse;
+import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
+import com.example.shengtingapi.response.wrap.ClusterGetItem;
 import com.example.shengtingapi.response.wrap.ClusterGetResult;
 import com.example.shengtingapi.response.wrap.ClusterSearchResult;
 import com.example.shengtingapi.util.DateUtil;
@@ -104,6 +108,34 @@ public class ReleaseController extends BaseController {
         return new RestResult("异常出错");
     }
 
+    @RequestMapping(value = "/clusterInfoCount")
+    public Object clusterInfoCount(@RequestBody BaseJson baseJson){
+        try {
+            Aggregation agg = null;
+
+            /*
+            Long beginTime = DateUtil.getTimeByTime(baseJson.getStartTime());
+            Long endTime = DateUtil.getTimeByTime(baseJson.getEndTime());
+
+            Criteria matchCondition= Criteria.where("CaptureTime").gte(beginTime).lte(endTime);
+            if(baseJson.getClusterTotal()!=null){
+                matchCondition.and("ClusterTotal").gte(baseJson.getClusterTotal());
+            }*/
+
+            Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getBeginClusterTotal());
+            if (baseJson.getEndClusterTotal() != null) {
+                matchCondition.lt(baseJson.getBeginClusterTotal());
+            }
+
+            Query query = new Query(matchCondition);
+            long count=mongoTemplate.count(query,ClusterInfo.class);
+            return new RestResult<>(count);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new RestResult("异常出错");
+    }
+
     @RequestMapping(value = "/imageSearch")
     public Object imageSearch(@RequestBody BaseJson baseJson) {
         try {
@@ -120,12 +152,21 @@ public class ReleaseController extends BaseController {
             param = clusterSearchParam(baseJson.getTop(),imageStr,baseJson.getScore());
             url = realUrlClusterGet(ClusterSearch);
             String result = HttpClientUtil.postByStringJson(param, url, null);
-
+            ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
             return new RestResult<>(result);
         } catch (Exception e) {
             logger.error("",e);
         }
         return new RestResult("异常出错");
+    }
+
+    private void convertSearch(ClusterSearchResponse result) {
+        List<ClusterListResponse> clusters = result.getClusters();
+
+        for (ClusterListResponse cluster:clusters){
+            ClusterResponse clusterResponse = cluster.getResults().get(0);
+
+        }
     }
     private String clusterSearchParam(Integer top,String imageStr,Float score) throws IOException {
         Feature feature = new Feature(imageStr);
@@ -157,17 +198,17 @@ public class ReleaseController extends BaseController {
         try {
             Long beginTime = DateUtil.getTimeByTime(baseJson.getStartTime());
             Long endTime = DateUtil.getTimeByTime(baseJson.getEndTime());
-
-            ClusterGetResult result = new ClusterGetResult();
-            result.setCamerId("22");
-            result.setCaptureTime("2019-03-01T00:45:11Z");
-            result.setImgBigUrl("http://a.jpg");
-            result.setImgUrl("http://b.jpg");
-            result.setRegionId("222");
-            result.setCamerName("探点1");
-            result.setRegionName("测试");
             List list = new ArrayList();
-            list.add(result);
+           /* ClusterGetResult result = new ClusterGetResult();
+            ClusterGetItem item = new ClusterGetItem();
+            item.setCamerId("22");
+            item.setCaptureTime("2019-03-01T00:45:11Z");
+            item.setImgBigUrl("http://a.jpg");
+            item.setImgUrl("http://b.jpg");
+            item.setRegionId("222");
+            item.setCamerName("探点1");
+            item.setRegionName("测试");
+            list.add(item);*/
             return new RestResult<>(list);
         } catch (Exception e) {
             e.printStackTrace();

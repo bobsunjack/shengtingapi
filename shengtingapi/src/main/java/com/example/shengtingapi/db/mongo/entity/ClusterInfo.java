@@ -13,36 +13,27 @@ public class ClusterInfo {
     private String ImgBigUrl;
     private Long ClusterTotal;
     private Long LastTotal;
-    private String CamerId;
-    private String CamerName;
+    private String CameraId;
+    private String CameraName;
     private String RegionId;
     private String RegionName;
-    private String ClusterId;
-    private String Lat;
-    private String Lng;
+    private Double Lat;
+    private Double Lng;
 
-    public String getLat() {
+    public Double getLat() {
         return Lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(Double lat) {
         Lat = lat;
     }
 
-    public String getLng() {
+    public Double getLng() {
         return Lng;
     }
 
-    public void setLng(String lng) {
+    public void setLng(Double lng) {
         Lng = lng;
-    }
-
-    public String getClusterId() {
-        return ClusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        ClusterId = clusterId;
     }
 
     public String getId() {
@@ -93,20 +84,20 @@ public class ClusterInfo {
         LastTotal = lastTotal;
     }
 
-    public String getCamerId() {
-        return CamerId;
+    public String getCameraId() {
+        return CameraId;
     }
 
-    public void setCamerId(String camerId) {
-        CamerId = camerId;
+    public void setCameraId(String cameraId) {
+        CameraId = cameraId;
     }
 
-    public String getCamerName() {
-        return CamerName;
+    public String getCameraName() {
+        return CameraName;
     }
 
-    public void setCamerName(String camerName) {
-        CamerName = camerName;
+    public void setCameraName(String cameraName) {
+        CameraName = cameraName;
     }
 
     public String getRegionId() {

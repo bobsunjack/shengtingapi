@@ -6,6 +6,7 @@ import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
 import com.example.shengtingapi.db.mongo.service.MongoService;
 import com.example.shengtingapi.dto.*;
 import com.example.shengtingapi.json.BaseJson;
+import com.example.shengtingapi.response.wrap.ClusterGetItem;
 import com.example.shengtingapi.response.wrap.ClusterGetResult;
 import com.example.shengtingapi.response.wrap.ClusterSearchResult;
 import com.example.shengtingapi.util.DateUtil;
@@ -108,11 +109,40 @@ public class MockController extends BaseController {
         return new RestResult("异常出错");
     }
 
+
+    @RequestMapping(value = "/clusterInfoCount")
+    public Object clusterInfoCount(@RequestBody BaseJson baseJson){
+        try {
+            Aggregation agg = null;
+
+            /*
+            Long beginTime = DateUtil.getTimeByTime(baseJson.getStartTime());
+            Long endTime = DateUtil.getTimeByTime(baseJson.getEndTime());
+
+            Criteria matchCondition= Criteria.where("CaptureTime").gte(beginTime).lte(endTime);
+            if(baseJson.getClusterTotal()!=null){
+                matchCondition.and("ClusterTotal").gte(baseJson.getClusterTotal());
+            }*/
+
+            Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getBeginClusterTotal());
+            if (baseJson.getEndClusterTotal() != null) {
+                matchCondition.lt(baseJson.getBeginClusterTotal());
+            }
+
+            Query query = new Query(matchCondition);
+            long count=mongoTemplate.count(query,ClusterInfo.class);
+            return new RestResult<>(count);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new RestResult("异常出错");
+    }
+
     @RequestMapping(value = "/imageSearch")
     public Object imageSearch(@RequestBody BaseJson baseJson){
         try {
             ClusterSearchResult result = new ClusterSearchResult();
-            result.setCamerId("22");
+            result.setCameraId("22");
             result.setCaptureTime("2019-03-01T00:45:11Z");
             result.setClusterId("33");
             result.setImgBigUrl("http://a.jpg");
@@ -134,19 +164,21 @@ public class MockController extends BaseController {
             Long beginTime = DateUtil.getTimeByTime(baseJson.getStartTime());
             Long endTime = DateUtil.getTimeByTime(baseJson.getEndTime());
 
-            ClusterGetResult result = new ClusterGetResult();
-            result.setCamerId("22");
-            result.setCaptureTime("2019-03-01T00:45:11Z");
-            result.setImgBigUrl("http://a.jpg");
-            result.setImgUrl("http://b.jpg");
-            result.setRegionId("222");
-            result.setCamerName("探点1");
-            result.setRegionName("测试");
-            result.setLat("39.916527");
-            result.setLng("116.397128");
+
+            ClusterGetItem item = new ClusterGetItem();
+            item.setCamerId("22");
+            item.setCaptureTime("2019-03-01T00:45:11Z");
+            item.setImgBigUrl("http://a.jpg");
+            item.setImgUrl("http://b.jpg");
+            item.setRegionId("222");
+            item.setCamerName("探点1");
+            item.setRegionName("测试");
+            item.setLat("39.916527");
+            item.setLng("116.397128");
             List list = new ArrayList();
-            list.add(result);
-            return new RestResult<>(list);
+            list.add(item);
+            ClusterGetResult result = new ClusterGetResult(list,1l);
+            return new RestResult<>(result);
         } catch (Exception e) {
             e.printStackTrace();
         }

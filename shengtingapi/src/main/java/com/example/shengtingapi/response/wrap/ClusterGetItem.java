@@ -1,30 +1,39 @@
 package com.example.shengtingapi.response.wrap;
 
-public class ClusterSearchResult {
-    private String cameraId;
+public class ClusterGetItem {
+    private String camerId;
     private String regionId;
-    private String ClusterId;
     private String captureTime;
     private String imgUrl;
     private String imgBigUrl;
-    private String score;
-    private String cameraName;
+    private String camerName;
     private String regionName;
+    private String lat;
+    private String lng;
 
-    public String getCameraId() {
-        return cameraId;
+
+    public String getLat() {
+        return lat;
     }
 
-    public void setCameraId(String cameraId) {
-        this.cameraId = cameraId;
+    public void setLat(String lat) {
+        this.lat = lat;
     }
 
-    public String getCameraName() {
-        return cameraName;
+    public String getLng() {
+        return lng;
     }
 
-    public void setCameraName(String cameraName) {
-        this.cameraName = cameraName;
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
+    public String getCamerName() {
+        return camerName;
+    }
+
+    public void setCamerName(String camerName) {
+        this.camerName = camerName;
     }
 
     public String getRegionName() {
@@ -35,14 +44,13 @@ public class ClusterSearchResult {
         this.regionName = regionName;
     }
 
-    public String getScore() {
-        return score;
+    public String getCamerId() {
+        return camerId;
     }
 
-    public void setScore(String score) {
-        this.score = score;
+    public void setCamerId(String camerId) {
+        this.camerId = camerId;
     }
-
 
     public String getRegionId() {
         return regionId;
@@ -50,14 +58,6 @@ public class ClusterSearchResult {
 
     public void setRegionId(String regionId) {
         this.regionId = regionId;
-    }
-
-    public String getClusterId() {
-        return ClusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        ClusterId = clusterId;
     }
 
     public String getCaptureTime() {
