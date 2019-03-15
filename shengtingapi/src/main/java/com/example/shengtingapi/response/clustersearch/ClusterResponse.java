@@ -9,7 +9,15 @@ public class ClusterResponse {
     private PortraitImage portrait_image;
     private PanoramicImage panoramic_image;
     private String score;
+    private String cluster_id;
 
+    public String getCluster_id() {
+        return cluster_id;
+    }
+
+    public void setCluster_id(String cluster_id) {
+        this.cluster_id = cluster_id;
+    }
 
     public ObjectId getObject_id() {
         return object_id;

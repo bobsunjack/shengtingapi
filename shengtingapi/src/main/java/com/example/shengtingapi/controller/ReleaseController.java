@@ -1,11 +1,14 @@
 package com.example.shengtingapi.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.db.mongo.entity.CameraInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
 import com.example.shengtingapi.db.mongo.service.MongoService;
 import com.example.shengtingapi.dto.*;
+import com.example.shengtingapi.init.MongoCacheExecute;
 import com.example.shengtingapi.json.BaseJson;
+import com.example.shengtingapi.response.clusterget.ClusterGetResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterListResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
@@ -14,6 +17,7 @@ import com.example.shengtingapi.response.wrap.ClusterGetResult;
 import com.example.shengtingapi.response.wrap.ClusterSearchResult;
 import com.example.shengtingapi.util.DateUtil;
 import com.example.shengtingapi.util.HttpClientUtil;
+import com.example.shengtingapi.util.MapUrlParamsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -150,23 +154,35 @@ public class ReleaseController extends BaseController {
             String imageStr = content.substring(begin, end);
             System.out.println();
             param = clusterSearchParam(baseJson.getTop(),imageStr,baseJson.getScore());
-            url = realUrlClusterGet(ClusterSearch);
+            url = realUrlClusterGet(ClusterSearch,"");
             String result = HttpClientUtil.postByStringJson(param, url, null);
             ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
-            return new RestResult<>(result);
+            List<ClusterSearchResult> convertItems=convertSearch(obj);
+            return new RestResult<>(convertItems);
         } catch (Exception e) {
             logger.error("",e);
         }
         return new RestResult("异常出错");
     }
 
-    private void convertSearch(ClusterSearchResponse result) {
+    private List<ClusterSearchResult> convertSearch(ClusterSearchResponse result) {
+        List<ClusterSearchResult> calcResult = new ArrayList();
         List<ClusterListResponse> clusters = result.getClusters();
 
         for (ClusterListResponse cluster:clusters){
             ClusterResponse clusterResponse = cluster.getResults().get(0);
-
+            ClusterSearchResult item = new ClusterSearchResult();
+            item.setScore(clusterResponse.getScore());
+            item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
+            item.setImgUrl(clusterResponse.getPortrait_image().getUrl());
+            item.setImgBigUrl(clusterResponse.getPortrait_image().getUrl());
+            item.setClusterId(clusterResponse.getCluster_id());
+            CameraInfo cameraInfo=MongoCacheExecute.getItem(item.getCameraId(), item.getRegionId());
+            item.setCameraName(cameraInfo.getCameraName());
+            item.setRegionName(cameraInfo.getRegionName());
+            calcResult.add(item);
         }
+        return calcResult;
     }
     private String clusterSearchParam(Integer top,String imageStr,Float score) throws IOException {
         Feature feature = new Feature(imageStr);
@@ -196,24 +212,48 @@ public class ReleaseController extends BaseController {
     @RequestMapping(value = "/onePersonList")
     public Object onePersonList(@RequestBody BaseJson baseJson) {
         try {
-            Long beginTime = DateUtil.getTimeByTime(baseJson.getStartTime());
-            Long endTime = DateUtil.getTimeByTime(baseJson.getEndTime());
-            List list = new ArrayList();
-           /* ClusterGetResult result = new ClusterGetResult();
-            ClusterGetItem item = new ClusterGetItem();
-            item.setCamerId("22");
-            item.setCaptureTime("2019-03-01T00:45:11Z");
-            item.setImgBigUrl("http://a.jpg");
-            item.setImgUrl("http://b.jpg");
-            item.setRegionId("222");
-            item.setCamerName("探点1");
-            item.setRegionName("测试");
-            list.add(item);*/
-            return new RestResult<>(list);
+            String param = searchGetParam(baseJson.getPageNum(),baseJson.getPageSize(),baseJson.getClusterId());
+            String url = realUrlClusterGet(ClusterGet,baseJson.getClusterId()) + "?" + param;
+            String content = HttpClientUtil.getByUrl(url, null);
+            ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
+            ClusterGetResult clusterGetResult= convertClusterGet (obj);
+            return new RestResult<>(clusterGetResult);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return new RestResult("异常出错");
+    }
+    private ClusterGetResult convertClusterGet(ClusterGetResponse result) {
+        List<ClusterGetItem> calclist = new ArrayList();
+        List<ClusterResponse> clusters = result.getCluster().getResults();
+        for (ClusterResponse clusterResponse:clusters){
+            ClusterGetItem item = new ClusterGetItem();
+            item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
+            item.setImgUrl(clusterResponse.getPortrait_image().getUrl());
+            item.setImgBigUrl(clusterResponse.getPortrait_image().getUrl());
+            CameraInfo cameraInfo=MongoCacheExecute.getItem(item.getCameraId(), item.getRegionId());
+            item.setCameraName(cameraInfo.getCameraName());
+            item.setRegionName(cameraInfo.getRegionName());
+            item.setLat(cameraInfo.getLat());
+            item.setLng(cameraInfo.getLng());
+            calclist.add(item);
+        }
+        return new ClusterGetResult(calclist,result.getPage().getTotal());
+    }
+    private String searchGetParam(Long page,Long size,String clusterId) {
+        Long offset = page*size;
+        Map map = new HashMap();
+        map.put("cluster_id", clusterId);
+        map.put("period.start", "2017-01-01T10:00:20.021Z");
+        map.put("period.end", "2019-10-01T10:00:20.021Z");
+        map.put("page.offset", offset);
+        map.put("page.limit", size);
+        map.put("ignore_centroid", false);
+        map.put("object_type", BaseController.OBJECT_TYPE);
+        map.put("feature_version", BaseController.FEATURE_VERSION);
+        String jsonParam = MapUrlParamsUtils.getUrlParamsByMap(map);
+        logger.error("param:" + jsonParam);
+        return jsonParam;
     }
 
 

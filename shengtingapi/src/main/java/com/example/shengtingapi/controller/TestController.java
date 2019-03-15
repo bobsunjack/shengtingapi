@@ -91,7 +91,7 @@ public class TestController extends BaseController {
     public Object clusterGet(Integer page) {
         try {
             String param = searchGetParam(page);
-            String url = realUrlClusterGet(ClusterGet);
+            String url = realUrlClusterGet(ClusterGet,CLUSTER_ID);
             String result = HttpClientUtil.postByStringJson(param, url, null);
             logger.error("extract:" + result);
             return result;
@@ -105,7 +105,7 @@ public class TestController extends BaseController {
         try {
             BaseController.CLUSTER_ID = clusterId;
             String param = searchGetParam2(page);
-            String url = realUrlClusterGet(ClusterGet) + "?" + param;
+            String url = realUrlClusterGet(ClusterGet,clusterId) + "?" + param;
             logger.error("get:"+url);
             String result = HttpClientUtil.getByUrl(url, null);
             logger.error("extract:" + result);
@@ -147,7 +147,7 @@ public class TestController extends BaseController {
         try {
             String imageStr = toImgeString();
             String param = clusterSearchParam(top,imageStr);
-            String url = realUrlClusterGet(ClusterSearch);
+            String url = realUrlClusterGet(ClusterSearch,"");
             String result = HttpClientUtil.postByStringJson(param, url, null);
             logger.error("extract:" + result);
             return result;
@@ -171,7 +171,7 @@ public class TestController extends BaseController {
     public Object systeminfo() {
         try {
             String param = systemInfoParam();
-            String url = realUrlClusterGet(SYSTEMINFO) + "?" + param;
+            String url = realUrlClusterGet(SYSTEMINFO,"") + "?" + param;
             logger.error("get:"+url);
             String result = HttpClientUtil.getByUrl(url, null);
             logger.error("extract:" + result);
@@ -207,7 +207,7 @@ public class TestController extends BaseController {
             imageStr = content.substring(begin, end);
             System.out.println();
             param = clusterSearchParam(top,imageStr);
-            url = realUrlClusterGet(ClusterSearch);
+            url = realUrlClusterGet(ClusterSearch,"");
             String result = HttpClientUtil.postByStringJson(param, url, null);
             logger.error("extract:" + result);
             return result;
@@ -228,7 +228,7 @@ public class TestController extends BaseController {
             for(int i=begin;i<total;i++) {
                 BaseController.CLUSTER_ID = i+"";
                 String param = searchGetParam2(page);
-                String url = realUrlClusterGet(ClusterGet) + "?" + param;
+                String url = realUrlClusterGet(ClusterGet,CLUSTER_ID) + "?" + param;
                 logger.error("get:" + url);
                 result = HttpClientUtil.getByUrl2(url, null);
                 if(result==null){

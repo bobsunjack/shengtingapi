@@ -9,6 +9,24 @@ public class CameraInfo {
     private String cameraId;
     private String regionName;
     private String regionId;
+    private String Lng;
+    private String Lat;
+
+    public String getLng() {
+        return Lng;
+    }
+
+    public void setLng(String lng) {
+        Lng = lng;
+    }
+
+    public String getLat() {
+        return Lat;
+    }
+
+    public void setLat(String lat) {
+        Lat = lat;
+    }
 
     public String getArea() {
         return area;

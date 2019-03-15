@@ -1,16 +1,32 @@
 package com.example.shengtingapi.response.wrap;
 
 public class ClusterGetItem {
-    private String camerId;
+    private String cameraId;
     private String regionId;
     private String captureTime;
     private String imgUrl;
     private String imgBigUrl;
-    private String camerName;
+    private String cameraName;
     private String regionName;
     private String lat;
     private String lng;
 
+
+    public String getCameraId() {
+        return cameraId;
+    }
+
+    public void setCameraId(String cameraId) {
+        this.cameraId = cameraId;
+    }
+
+    public String getCameraName() {
+        return cameraName;
+    }
+
+    public void setCameraName(String cameraName) {
+        this.cameraName = cameraName;
+    }
 
     public String getLat() {
         return lat;
@@ -28,13 +44,6 @@ public class ClusterGetItem {
         this.lng = lng;
     }
 
-    public String getCamerName() {
-        return camerName;
-    }
-
-    public void setCamerName(String camerName) {
-        this.camerName = camerName;
-    }
 
     public String getRegionName() {
         return regionName;
@@ -44,13 +53,7 @@ public class ClusterGetItem {
         this.regionName = regionName;
     }
 
-    public String getCamerId() {
-        return camerId;
-    }
 
-    public void setCamerId(String camerId) {
-        this.camerId = camerId;
-    }
 
     public String getRegionId() {
         return regionId;

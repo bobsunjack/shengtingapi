@@ -38,10 +38,10 @@ public class BaseController {
         return realUrl;
     }
 
-    public  String realUrlClusterGet(String url){
+    public  String realUrlClusterGet(String url,String clusterId){
         String realUrl = url.replaceAll("\\{feature_version}", FEATURE_VERSION+"");
         realUrl = realUrl.replaceAll("\\{object_type}", OBJECT_TYPE);
-        realUrl = realUrl.replaceAll("\\{cluster_id}", CLUSTER_ID);
+        realUrl = realUrl.replaceAll("\\{cluster_id}", clusterId);
         logger.error("url:" + realUrl);
         return realUrl;
     }
