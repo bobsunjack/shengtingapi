@@ -212,7 +212,7 @@ public class ReleaseController extends BaseController {
     @RequestMapping(value = "/onePersonList")
     public Object onePersonList(@RequestBody BaseJson baseJson) {
         try {
-            String param = searchGetParam(baseJson.getPageNum(),baseJson.getPageSize(),baseJson.getClusterId());
+            String param = searchGetParam(baseJson.getPageNum(),baseJson.getPageSize(),baseJson.getClusterId(),baseJson.getStartTime(),baseJson.getEndTime());
             String url = realUrlClusterGet(ClusterGet,baseJson.getClusterId()) + "?" + param;
             String content = HttpClientUtil.getByUrl(url, null);
             ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
@@ -228,6 +228,8 @@ public class ReleaseController extends BaseController {
         List<ClusterResponse> clusters = result.getCluster().getResults();
         for (ClusterResponse clusterResponse:clusters){
             ClusterGetItem item = new ClusterGetItem();
+            item.setCaptureTime(clusterResponse.getObject_id().getCaptured_time());
+            item.setCameraId(clusterResponse.getObject_id().getCamera_id().getCamera_idx());
             item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
             item.setImgUrl(clusterResponse.getPortrait_image().getUrl());
             item.setImgBigUrl(clusterResponse.getPortrait_image().getUrl());
@@ -240,12 +242,12 @@ public class ReleaseController extends BaseController {
         }
         return new ClusterGetResult(calclist,result.getPage().getTotal());
     }
-    private String searchGetParam(Long page,Long size,String clusterId) {
-        Long offset = page*size;
+    private String searchGetParam(Long page,Long size,String clusterId,String beginTime,String endTime) {
+        Long offset = (page-1)*size;
         Map map = new HashMap();
         map.put("cluster_id", clusterId);
-        map.put("period.start", "2017-01-01T10:00:20.021Z");
-        map.put("period.end", "2019-10-01T10:00:20.021Z");
+        map.put("period.start", DateUtil.convertToTZTime(beginTime));   //"2017-01-01T10:00:20.021Z"
+        map.put("period.end", DateUtil.convertToTZTime(endTime));   //"2019-10-01T10:00:20.021Z"
         map.put("page.offset", offset);
         map.put("page.limit", size);
         map.put("ignore_centroid", false);

@@ -1,18 +1,21 @@
 package com.example.shengtingapi.test;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.db.mongo.entity.CameraInfo;
+import com.example.shengtingapi.init.MongoCacheExecute;
 import com.example.shengtingapi.response.clusterget.ClusterGetResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterResponse;
-import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
-import com.example.shengtingapi.util.DateUtil;
+import com.example.shengtingapi.response.wrap.ClusterGetItem;
+import com.example.shengtingapi.response.wrap.ClusterGetResult;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TestFile {
+public class TestFileOnePerson {
     public static void main(String[] args) throws IOException {
-        System.out.println(DateUtil.convertToTZTime("2013-01-01 11:11:11"));
        // byte[] bytes = getContent("I:\\log\\search.txt");
         /*byte[] bytes = getContent("I:\\log\\s1.txt");
         String content = new String(bytes);*/
@@ -28,8 +31,29 @@ public class TestFile {
         byte[] bytes = getContent("I:\\log\\getclass.txt");
         String content = new String(bytes);
         ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
+        ClusterGetResult clusterGetResult= convertClusterGet (obj);
         obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
         System.out.println(obj);
+    }
+
+    private static ClusterGetResult convertClusterGet(ClusterGetResponse result) {
+        List<ClusterGetItem> calclist = new ArrayList();
+        List<ClusterResponse> clusters = result.getCluster().getResults();
+        for (ClusterResponse clusterResponse:clusters){
+            ClusterGetItem item = new ClusterGetItem();
+            item.setCaptureTime(clusterResponse.getObject_id().getCaptured_time());
+            item.setCameraId(clusterResponse.getObject_id().getCamera_id().getCamera_idx());
+            item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
+            item.setImgUrl(clusterResponse.getPortrait_image().getUrl());
+            item.setImgBigUrl(clusterResponse.getPortrait_image().getUrl());
+            CameraInfo cameraInfo= MongoCacheExecute.getItem(item.getCameraId(), item.getRegionId());
+            item.setCameraName(cameraInfo.getCameraName());
+            item.setRegionName(cameraInfo.getRegionName());
+            item.setLat(cameraInfo.getLat());
+            item.setLng(cameraInfo.getLng());
+            calclist.add(item);
+        }
+        return new ClusterGetResult(calclist,result.getPage().getTotal());
     }
 
 

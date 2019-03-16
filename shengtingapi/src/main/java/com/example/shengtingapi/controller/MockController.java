@@ -166,12 +166,12 @@ public class MockController extends BaseController {
 
 
             ClusterGetItem item = new ClusterGetItem();
-            item.setCamerId("22");
+            item.setCameraId("22");
             item.setCaptureTime("2019-03-01T00:45:11Z");
             item.setImgBigUrl("http://a.jpg");
             item.setImgUrl("http://b.jpg");
             item.setRegionId("222");
-            item.setCamerName("探点1");
+            item.setCameraName("探点1");
             item.setRegionName("测试");
             item.setLat("39.916527");
             item.setLng("116.397128");

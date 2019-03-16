@@ -25,4 +25,9 @@ public class DateUtil {
                 "yyyy-MM-dd HH:mm:ss");
         return formate.parse(timeStr).getTime();
     }
+
+    public static String convertToTZTime(String normalTime){
+        return normalTime.replace(" ", "T") + ".021Z";
+
+    }
 }
