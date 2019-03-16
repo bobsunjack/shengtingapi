@@ -152,10 +152,10 @@ public class ReleaseController extends BaseController {
             int begin = content.indexOf("blob") + 7;
             int end = content.indexOf("\"",begin) ;
             String imageStr = content.substring(begin, end);
-            System.out.println();
             param = clusterSearchParam(baseJson.getTop(),imageStr,baseJson.getScore());
             url = realUrlClusterGet(ClusterSearch,"");
             String result = HttpClientUtil.postByStringJson(param, url, null);
+            logger.error("search:"+result);
             ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
             List<ClusterSearchResult> convertItems=convertSearch(obj);
             return new RestResult<>(convertItems);
@@ -173,16 +173,38 @@ public class ReleaseController extends BaseController {
             ClusterResponse clusterResponse = cluster.getResults().get(0);
             ClusterSearchResult item = new ClusterSearchResult();
             item.setScore(clusterResponse.getScore());
-            item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
+            item.setClusterId(clusterResponse.getCluster_id());
+
+            /*item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
             item.setImgUrl(clusterResponse.getPortrait_image().getUrl());
             item.setImgBigUrl(clusterResponse.getPortrait_image().getUrl());
-            item.setClusterId(clusterResponse.getCluster_id());
             CameraInfo cameraInfo=MongoCacheExecute.getItem(item.getCameraId(), item.getRegionId());
             item.setCameraName(cameraInfo.getCameraName());
-            item.setRegionName(cameraInfo.getRegionName());
+            item.setRegionName(cameraInfo.getRegionName());*/
+
+            searchPersonByHttp(item);
             calcResult.add(item);
         }
         return calcResult;
+    }
+
+    private void searchPersonByHttp(ClusterSearchResult clusterSearchResult){
+        try {
+            String clusterId = clusterSearchResult.getClusterId();
+            String url = realUrlClusterGet(ClusterGet,clusterId) + "?cluster_id=" +clusterId ;
+            String content = HttpClientUtil.getByUrl(url, null);
+            ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
+            ClusterGetResult clusterGetResult= convertClusterGet (obj);
+            ClusterGetItem item= clusterGetResult.getItems().get(0);
+            clusterSearchResult.setRegionId(item.getRegionId());
+            clusterSearchResult.setImgUrl(item.getImgUrl());
+            clusterSearchResult.setImgBigUrl(item.getImgBigUrl());
+            clusterSearchResult.setCameraName(item.getCameraName());
+            clusterSearchResult.setRegionName(item.getRegionName());
+        } catch (IOException e) {
+            logger.error("", e);
+        }
+
     }
     private String clusterSearchParam(Integer top,String imageStr,Float score) throws IOException {
         Feature feature = new Feature(imageStr);

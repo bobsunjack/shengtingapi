@@ -58,7 +58,7 @@ public class ShengtingapiApplicationTests {
 
     //@Test
     public void contextLoads2() {
-        List<String> items= TestFile2.toArrayByFileReader1("E:\\TEST\\runoob.txt");
+        List<String> items= TestFile2.toArrayByFileReader1("d:\\qxb\\runoob.txt");
         for (String item : items) {
             String unit[] = item.split("\t");
             CameraInfo info = new CameraInfo();

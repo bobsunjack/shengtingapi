@@ -6,6 +6,7 @@ import com.example.shengtingapi.db.mongo.dao.ClusterStatisticsRepository;
 import com.example.shengtingapi.db.mongo.entity.CameraInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterInfo;
 import com.example.shengtingapi.db.mongo.entity.ClusterStatistics;
+import com.example.shengtingapi.test.TestFile2;
 import com.example.shengtingapi.util.UuidUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -32,7 +33,7 @@ public class MongoCacheExecuteTest implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        ClusterStatistics clusterStatistics = new ClusterStatistics();
+        /*ClusterStatistics clusterStatistics = new ClusterStatistics();
         clusterStatistics.setId(UuidUtil.get32UUID());
         clusterStatistics.setCaptureTotal(3l);
         clusterStatistics.setClusterTotal(4l);
@@ -53,6 +54,18 @@ public class MongoCacheExecuteTest implements CommandLineRunner {
         clusterInfo.setLat(39.916527);
         clusterInfo.setLng(116.397128);
         clusterInfo.setArea("杭州");
-        clusterInfoRepository.save(clusterInfo);
+        clusterInfoRepository.save(clusterInfo);*/
+
+        List<String> items= TestFile2.toArrayByFileReader1("d:\\qxb\\runoob.txt");
+        for (String item : items) {
+            String unit[] = item.split("\t");
+            CameraInfo info = new CameraInfo();
+            info.setCameraName(unit[0]);
+            info.setCameraId(unit[1]);
+            info.setRegionId(unit[2]);
+            info.setRegionName(unit[3]);
+            info.setArea(unit[4]);
+            cameraInfoRepository.save(info);
+        }
     }
 }

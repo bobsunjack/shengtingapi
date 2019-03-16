@@ -28,7 +28,9 @@ public class TestFile2 {
         // 使用ArrayList来存储每行读取到的字符串
         ArrayList<String> arrayList = new ArrayList<>();
         try {
-            FileReader fr = new FileReader(name);
+            //FileReader fr = new FileReader(name);
+            File file = new File(name);
+            InputStreamReader fr = new InputStreamReader(new FileInputStream(file), "utf-8");
             BufferedReader bf = new BufferedReader(fr);
             String str;
             // 按行读取字符串
