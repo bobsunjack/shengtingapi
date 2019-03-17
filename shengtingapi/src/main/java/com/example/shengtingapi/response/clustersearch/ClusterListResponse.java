@@ -6,6 +6,15 @@ import java.util.List;
 
 public class ClusterListResponse {
     private String cluster_id;
+    private String score;
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
 
     public String getCluster_id() {
         return cluster_id;

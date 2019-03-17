@@ -172,7 +172,7 @@ public class ReleaseController extends BaseController {
         for (ClusterListResponse cluster:clusters){
             ClusterResponse clusterResponse = cluster.getResults().get(0);
             ClusterSearchResult item = new ClusterSearchResult();
-            item.setScore(clusterResponse.getScore());
+            item.setScore(cluster.getScore());
             item.setClusterId(clusterResponse.getCluster_id());
 
             /*item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
