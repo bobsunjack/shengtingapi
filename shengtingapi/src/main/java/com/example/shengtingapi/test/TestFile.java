@@ -25,10 +25,17 @@ public class TestFile {
         ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
         System.out.println(obj);*/
 
-        byte[] bytes = getContent("I:\\log\\getclass.txt");
+     /*   byte[] bytes = getContent("I:\\log\\getclass.txt");
         String content = new String(bytes);
         ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
         obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
+        System.out.println(obj);*/
+
+
+        byte[] bytes = getContent("I:\\log\\search1.txt");
+        String content = new String(bytes);
+        ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
+       /// obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
         System.out.println(obj);
     }
 

@@ -156,7 +156,7 @@ public class ReleaseController extends BaseController {
             url = realUrlClusterGet(ClusterSearch,"");
             String result = HttpClientUtil.postByStringJson(param, url, null);
             logger.error("search:"+result);
-            ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
+            ClusterSearchResponse obj = JSON.parseObject(result, ClusterSearchResponse.class);
             List<ClusterSearchResult> convertItems=convertSearch(obj);
             return new RestResult<>(convertItems);
         } catch (Exception e) {
