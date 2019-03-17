@@ -1,5 +1,6 @@
 package com.example.shengtingapi.db.mongo.entity;
 
+import com.example.shengtingapi.controller.BaseController;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -62,6 +63,9 @@ public class ClusterInfo {
     }
 
     public String getImgUrl() {
+        if (ImgUrl != null) {
+            return BaseController.PORTRAIT_IMAGE_PREX + ImgUrl;
+        }
         return ImgUrl;
     }
 

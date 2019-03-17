@@ -65,6 +65,8 @@ public class MongoCacheExecuteTest implements CommandLineRunner {
             info.setRegionId(unit[2]);
             info.setRegionName(unit[3]);
             info.setArea(unit[4]);
+            info.setLat(unit[5]);
+            info.setLng(unit[6]);
             cameraInfoRepository.save(info);
         }
     }

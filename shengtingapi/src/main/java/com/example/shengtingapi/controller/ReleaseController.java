@@ -41,7 +41,7 @@ import java.util.Map;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @RestController
-@RequestMapping(value = "/shengting-r")
+@RequestMapping(value = "/shengting")
 public class ReleaseController extends BaseController {
 
     @Autowired
@@ -197,6 +197,8 @@ public class ReleaseController extends BaseController {
             ClusterGetResult clusterGetResult= convertClusterGet (obj);
             ClusterGetItem item= clusterGetResult.getItems().get(0);
             clusterSearchResult.setRegionId(item.getRegionId());
+            clusterSearchResult.setCameraId(item.getCameraId());
+            clusterSearchResult.setCaptureTime(item.getCaptureTime());
             clusterSearchResult.setImgUrl(item.getImgUrl());
             clusterSearchResult.setImgBigUrl(item.getImgBigUrl());
             clusterSearchResult.setCameraName(item.getCameraName());
@@ -254,7 +256,7 @@ public class ReleaseController extends BaseController {
             item.setCameraId(clusterResponse.getObject_id().getCamera_id().getCamera_idx());
             item.setRegionId(clusterResponse.getObject_id().getCamera_id().getRegion_id());
             item.setImgUrl(clusterResponse.getPortrait_image().getUrl());
-            item.setImgBigUrl(clusterResponse.getPortrait_image().getUrl());
+            item.setImgBigUrl(clusterResponse.getPanoramic_image().getUrl());
             CameraInfo cameraInfo=MongoCacheExecute.getItem(item.getCameraId(), item.getRegionId());
             item.setCameraName(cameraInfo.getCameraName());
             item.setRegionName(cameraInfo.getRegionName());

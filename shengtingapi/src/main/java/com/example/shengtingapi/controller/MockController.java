@@ -38,7 +38,7 @@ import java.util.Map;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @RestController
-@RequestMapping(value = "/shengting")
+@RequestMapping(value = "/shengting-t")
 public class MockController extends BaseController {
 
     @Autowired
