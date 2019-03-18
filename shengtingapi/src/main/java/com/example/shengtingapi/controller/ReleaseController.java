@@ -83,11 +83,15 @@ public class ReleaseController extends BaseController {
             }*/
             Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getBeginClusterTotal());
             if (!baseJson.getEndClusterTotal().equals(-1)) {
-                matchCondition.lt(baseJson.getBeginClusterTotal());
+                matchCondition.lt(baseJson.getEndClusterTotal());
             }
-
+            logger.error("-----------baseJson.getBeginClusterTotal()"+baseJson.getBeginClusterTotal()+","+baseJson.getEndClusterTotal());
 
             String orderField = baseJson.getOrderField() != null ? baseJson.getOrderField() : "CaptureTime";
+            if (orderField.equals("qtime")) {
+                orderField = "CaptureTime";
+            }
+            logger.error("-----------base" + orderField);
             if (baseJson.getOrderType().equals("-1")) {
                 sortOperation = sort(Sort.Direction.DESC, orderField);
             } else {
