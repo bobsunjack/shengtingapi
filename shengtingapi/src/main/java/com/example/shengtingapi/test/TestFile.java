@@ -1,6 +1,7 @@
 package com.example.shengtingapi.test;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.json.BaseJson;
 import com.example.shengtingapi.response.clusterget.ClusterGetResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
@@ -30,7 +31,16 @@ public class TestFile {
         ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
         obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
         System.out.println(obj);*/
+        "182".split(",");
+        BaseJson baseJson = new BaseJson();
+        baseJson.setBeginClusterTotal(-1L);
 
+        if (!baseJson.getBeginClusterTotal().equals(-1)) {
+          //  matchCondition.lt(baseJson.getEndClusterTotal());
+        }
+
+        Long size = new Double( Math.ceil(10 * 1.0 / 3)).longValue();
+        System.out.println();
 
         byte[] bytes = getContent("I:\\log\\search1.txt");
         String content = new String(bytes);

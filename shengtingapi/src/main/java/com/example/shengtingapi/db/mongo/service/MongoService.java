@@ -23,4 +23,9 @@ public class MongoService {
         AggregationResults<ClusterInfo> results = mongoTemplate.aggregate(agg, ClusterInfo.COLLETION_NAME, ClusterInfo.class);
         return results.getMappedResults();
     }
+
+    public List<Long> findClusterInfoCount(Aggregation agg) {
+        AggregationResults<Long> results = mongoTemplate.aggregate(agg, ClusterInfo.COLLETION_NAME, Long.class);
+        return results.getMappedResults();
+    }
 }
