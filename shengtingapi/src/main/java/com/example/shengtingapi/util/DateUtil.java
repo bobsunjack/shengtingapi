@@ -83,12 +83,14 @@ public class DateUtil {
         Date date=formatDate.parse(month);
         //获取前月的第一天
         Calendar cal_1 = Calendar.getInstance();//获取当前日期
+        //Date nowDate =formatDate2.parse(formatDate2.format(cal_1.getTime()));
         cal_1.setTime(date);
         cal_1.set(Calendar.DAY_OF_MONTH, cal_1.getActualMaximum(Calendar.DAY_OF_MONTH));
         Date endDate = cal_1.getTime();
         cal_1.set(Calendar.DAY_OF_MONTH, 0);//设置为1号,当前日期既为本月第一天
         Date beginDate = cal_1.getTime();
         List<String> queryData = new ArrayList<>();
+        //while (endDate.compareTo(beginDate) >= 0&&nowDate.compareTo(beginDate)>0) {
         while (endDate.compareTo(beginDate) >= 0) {
             String day = formatDate2.format(beginDate);
             queryData.add(day);
