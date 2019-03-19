@@ -538,6 +538,7 @@ public class ReleaseController extends BaseController {
             if (clusterStatisticsNumResult == null) {
                 clusterStatisticsNumResult=new ClusterStatisticsNumResult();
                 clusterStatisticsNumResult.setNum(index);
+                clusterStatisticsNumResult.setStatisticsTime(day);
             }
 
             results.add(clusterStatisticsNumResult);
