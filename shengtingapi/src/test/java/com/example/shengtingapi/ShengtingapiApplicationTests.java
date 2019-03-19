@@ -29,13 +29,20 @@ public class ShengtingapiApplicationTests {
     @Autowired
     CameraInfoRepository cameraInfoRepository;
 
-   // @Test
+    @Test
     public void contextLoads() {
         ClusterStatistics clusterStatistics = new ClusterStatistics();
         clusterStatistics.setId(UuidUtil.get32UUID());
         clusterStatistics.setCaptureTotal(3l);
         clusterStatistics.setClusterTotal(4l);
-        clusterStatistics.setStatisticsTime("2018-01-02");
+        clusterStatistics.setStatisticsTime("2019-01-02");
+        clusterStatisticsRepository.save(clusterStatistics);
+
+        clusterStatistics = new ClusterStatistics();
+        clusterStatistics.setId(UuidUtil.get32UUID());
+        clusterStatistics.setCaptureTotal(13l);
+        clusterStatistics.setClusterTotal(14l);
+        clusterStatistics.setStatisticsTime("2019-03-18");
         clusterStatisticsRepository.save(clusterStatistics);
 
         ClusterInfo clusterInfo = new ClusterInfo();
@@ -60,7 +67,7 @@ public class ShengtingapiApplicationTests {
     public void contextLoads2() {
         List<String> items= TestFile2.toArrayByFileReader1("d:\\qxb\\runoob.txt");
         for (String item : items) {
-            String unit[] = item.split("\t");
+            String[] unit = item.split("\t");
             CameraInfo info = new CameraInfo();
             info.setCameraName(unit[0]);
             info.setCameraId(unit[1]);
@@ -71,7 +78,7 @@ public class ShengtingapiApplicationTests {
         }
 
     }
-    @Test
+   // @Test
     public void contextLoads3() {
       List<CameraInfo> cameraInfoList= cameraInfoRepository.findAll();
         System.out.println(cameraInfoList.size());

@@ -18,6 +18,16 @@ public class BaseJson {
     private Long beginClusterTotal;  //归档总数
     private Long endClusterTotal;  //归档总数
 
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Long getBeginClusterTotal() {
         return beginClusterTotal;
     }

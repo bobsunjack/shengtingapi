@@ -17,6 +17,7 @@ import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
 import com.example.shengtingapi.response.wrap.ClusterGetItem;
 import com.example.shengtingapi.response.wrap.ClusterGetResult;
 import com.example.shengtingapi.response.wrap.ClusterSearchResult;
+import com.example.shengtingapi.response.wrap.ClusterStatisticsNumResult;
 import com.example.shengtingapi.util.DateUtil;
 import com.example.shengtingapi.util.HttpClientUtil;
 import com.example.shengtingapi.util.MapUrlParamsUtils;
@@ -32,10 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -63,7 +62,7 @@ public class ReleaseController extends BaseController {
             ClusterStatistics clusterStatistics= mongoTemplate.findOne(query, ClusterStatistics.class);
             return new RestResult<>(clusterStatistics);
         } catch (Exception e) {
-           logger.error("",e);
+           logger.debug("",e);
         }
         return new RestResult("异常出错");
     }
@@ -86,13 +85,13 @@ public class ReleaseController extends BaseController {
             if (!baseJson.getEndClusterTotal().equals(-1L)) {
                 matchCondition.lt(baseJson.getEndClusterTotal());
             }
-            logger.error("-----------baseJson.getBeginClusterTotal()"+baseJson.getBeginClusterTotal()+","+baseJson.getEndClusterTotal());
+            logger.debug("-----------baseJson.getBeginClusterTotal()"+baseJson.getBeginClusterTotal()+","+baseJson.getEndClusterTotal());
 
             String orderField = baseJson.getOrderField() != null ? baseJson.getOrderField() : "CaptureTime";
             if (orderField.equals("qtime")) {
                 orderField = "CaptureTime";
             }
-            logger.error("-----------base" + orderField);
+            logger.debug("-----------base" + orderField);
             if (baseJson.getOrderType().equals("-1")) {
                // sortOperation = sort(Sort.Direction.DESC, orderField);
                 sortOperation   =  new Sort(new Sort.Order(Sort.Direction.DESC, orderField));
@@ -107,10 +106,10 @@ public class ReleaseController extends BaseController {
             query.skip((int) _index);
             query.with(sortOperation);
             Long begin = System.currentTimeMillis();
-            logger.error("begin"+baseJson.getPageSize().intValue()+"--skip:"+(int) _index+";;;"+orderField);
+            logger.debug("begin"+baseJson.getPageSize().intValue()+"--skip:"+(int) _index+";;;"+orderField);
             List<ClusterInfo> result=mongoTemplate.find(query,ClusterInfo.class);
             Long end = System.currentTimeMillis();
-            logger.error("end"+result.size()+"---"+(end-begin));
+            logger.debug("end"+result.size()+"---"+(end-begin));
             return JSON.toJSONString(new RestResult<>(result));
         } catch (Exception e) {
             logger.error("",e);
@@ -141,10 +140,15 @@ public class ReleaseController extends BaseController {
 
             Query query = new Query(matchCondition);
             long count=mongoTemplate.count(query,ClusterInfo.class);*/
-            long count= MongoCacheExecute.getClusterInfoPage(baseJson.getBeginClusterTotal(), baseJson.getEndClusterTotal());
+            long count = 0;
+            if (baseJson.getBeginClusterTotal().equals(1L)&&baseJson.getEndClusterTotal().equals(-1L)) {
+                count= MongoCacheExecute.getClusterInfoPageTotal();
+            }else {
+                 count= MongoCacheExecute.getClusterInfoPage(baseJson.getBeginClusterTotal(), baseJson.getEndClusterTotal());
+            }
             return new RestResult<>(count);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
         return new RestResult("异常出错");
     }
@@ -156,7 +160,7 @@ public class ReleaseController extends BaseController {
             String param = extractParam(baseJson.getImageBlob());
             String url = realUrl(BatchDetectAndExtract);
             String content = HttpClientUtil.postByStringJson(param, url, null);
-            logger.error("extract:" + content);
+            logger.debug("extract:" + content);
 
             int begin = content.indexOf("blob") + 7;
             int end = content.indexOf("\"",begin) ;
@@ -164,12 +168,12 @@ public class ReleaseController extends BaseController {
             param = clusterSearchParam(baseJson.getTop(),imageStr,baseJson.getScore());
             url = realUrlClusterGet(ClusterSearch,"");
             String result = HttpClientUtil.postByStringJson(param, url, null);
-            logger.error("search:"+result);
+            logger.debug("search:"+result);
             ClusterSearchResponse obj = JSON.parseObject(result, ClusterSearchResponse.class);
             List<ClusterSearchResult> convertItems=convertSearch(obj);
             return new RestResult<>(convertItems);
         } catch (Exception e) {
-            logger.error("",e);
+            logger.debug("",e);
         }
         return new RestResult("异常出错");
     }
@@ -213,7 +217,7 @@ public class ReleaseController extends BaseController {
             clusterSearchResult.setCameraName(item.getCameraName());
             clusterSearchResult.setRegionName(item.getRegionName());
         } catch (IOException e) {
-            logger.error("", e);
+            logger.debug("", e);
         }
 
     }
@@ -222,7 +226,7 @@ public class ReleaseController extends BaseController {
         Config config = new Config(top,score);
         ClusterSearch clusterSearch = new ClusterSearch(feature, config);
         String jsonParam = JSON.toJSONString(clusterSearch);
-        logger.error("param:" + jsonParam);
+        logger.debug("param:" + jsonParam);
         return jsonParam;
     }
 
@@ -238,30 +242,37 @@ public class ReleaseController extends BaseController {
         param.put("requests", data);
         param.put("detect_mode", "Default");
         String jsonParam = JSON.toJSONString(param);
-        logger.error("param:" + jsonParam);
+        logger.debug("param:" + jsonParam);
         return jsonParam;
     }
 
     @RequestMapping(value = "/onePersonList")
     public Object onePersonList(@RequestBody BaseJson baseJson) {
         try {
-            logger.error("one personList clusterId list:"+baseJson.getClusterId());
+            logger.debug("one personList clusterId list:"+baseJson.getClusterId());
             String[] clusters=baseJson.getClusterId().split(",");
             List<ClusterGetItem> calclist = new ArrayList();
             for(String clusterId:clusters) {
-                logger.error("one personList clusterId:"+clusterId);
+                logger.debug("one personList clusterId:"+clusterId);
                 if(clusterId==null||clusterId.trim().equals(""))
                 {
                     continue;
                 }
                 baseJson.setClusterId(clusterId);
-                logger.error("basejson clusterId:"+baseJson.getClusterId());
+                logger.debug("basejson clusterId:"+baseJson.getClusterId());
                 personAll(baseJson, calclist);
             }
+            Long begin = System.currentTimeMillis();
+            if (calclist.size() > 0) {
+                Collections.sort(calclist);
+            }
+            logger.debug("sort----"+(System.currentTimeMillis()-begin)+calclist.size()+calclist.get(0).getCaptureTime()+"next="+calclist.get(1).getCaptureTime());
             ClusterGetResult clusterGetResult= new ClusterGetResult(calclist, new Long(calclist.size()));
-            return  JSON.toJSONString(new RestResult<>(clusterGetResult));
+            String content = JSON.toJSONString(new RestResult<>(clusterGetResult));
+            logger.debug("sort1----" + content);
+            return content;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
         return new RestResult("异常出错");
     }
@@ -273,8 +284,8 @@ public class ReleaseController extends BaseController {
             String param = searchGetParamAll(pageNum,pageSize,baseJson.getClusterId(),baseJson.getStartTime(),baseJson.getEndTime());
             String url = realUrlClusterGet(ClusterGet,baseJson.getClusterId()) + "?" + param;
             String content = HttpClientUtil.getByUrl(url, null);
-            logger.error("personall:" + url);
-            logger.error("personall content:"+content);
+            logger.debug("personall:" + url);
+            logger.debug("personall content:"+content);
             ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
             convertClusterGetAll (obj,calclist);
             Long totalSize = obj.getPage().getTotal();
@@ -282,9 +293,9 @@ public class ReleaseController extends BaseController {
             if(totalSize.compareTo(pageSize)>0){
                 totalPageNum = new Double(Math.ceil(totalSize*1.0 / pageSize)).longValue();
             }
-            logger.error("totalSize:"+totalSize+",totalPageNum"+totalPageNum);
+            logger.debug("totalSize:"+totalSize+",totalPageNum"+totalPageNum);
             for (pageNum = 2L; totalPageNum > pageNum;pageNum++) {
-                logger.error("totalPage:"+totalPageNum+",pageNum"+pageNum);
+                logger.debug("totalPage:"+totalPageNum+",pageNum"+pageNum);
                 param = searchGetParamAll(pageNum,pageSize,baseJson.getClusterId(),baseJson.getStartTime(),baseJson.getEndTime());
                 url = realUrlClusterGet(ClusterGet,baseJson.getClusterId()) + "?" + param;
                 content = HttpClientUtil.getByUrl(url, null);
@@ -292,7 +303,7 @@ public class ReleaseController extends BaseController {
                 convertClusterGetAll (obj,calclist);
             }
         } catch (IOException e) {
-          logger.error("personAll" ,e);
+          logger.debug("personAll" ,e);
         }
     }
 
@@ -341,7 +352,7 @@ public class ReleaseController extends BaseController {
         map.put("object_type", BaseController.OBJECT_TYPE);
         map.put("feature_version", BaseController.FEATURE_VERSION);
         String jsonParam = MapUrlParamsUtils.getUrlParamsByMap(map);
-        logger.error("param:" + jsonParam);
+        logger.debug("param:" + jsonParam);
         return jsonParam;
     }
 
@@ -371,7 +382,7 @@ public class ReleaseController extends BaseController {
             }
             return new RestResult<>(calclist);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
         }
         return new RestResult("异常出错");
     }
@@ -389,7 +400,7 @@ public class ReleaseController extends BaseController {
         map.put("object_type", BaseController.OBJECT_TYPE);
         map.put("feature_version", BaseController.FEATURE_VERSION);
         String jsonParam = MapUrlParamsUtils.getUrlParamsByMap(map);
-        logger.error("param:" + jsonParam);
+        logger.debug("param:" + jsonParam);
         return jsonParam;
     }
 
@@ -412,6 +423,154 @@ public class ReleaseController extends BaseController {
             calclist.add(item);
         }
         //return new ClusterGetResult(calclist,result.getPage().getTotal());
+    }
+
+
+    @RequestMapping(value = "/picNumStatistic")
+    public Object picNumStatistic(@RequestBody BaseJson baseJson) {
+        return MongoCacheExecute.CLUSTERINFOPAGE;
+    }
+
+    @RequestMapping(value = "/clusterStatisticByMonth")
+    public Object clusterStatisticByMonth(@RequestBody BaseJson baseJson) {
+        try {
+            //Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
+            //  Criteria criteria=  Criteria.where("StatisticsTime").is(baseJson.getQtime());
+
+            Pattern pattern = Pattern.compile("^"+baseJson.getQtime()+".*$", Pattern.CASE_INSENSITIVE);
+            Query query = new Query(
+                    Criteria.where("StatisticsTime").regex(pattern));
+            List<ClusterStatistics> clusterStatistics= mongoTemplate.find(query, ClusterStatistics.class);
+            String preDay=DateUtil.getPreMonthLastDay(baseJson.getQtime());
+            ClusterStatistics clusterStatisticsDay= findCalcNumByDay(preDay);
+            if (clusterStatisticsDay != null) {
+                clusterStatistics.add(clusterStatisticsDay);
+            }
+            List<String> queryDays = DateUtil.getMonthDays(baseJson.getQtime());
+            List<ClusterStatisticsNumResult> results=  wrapStatisticNumByMonth(clusterStatistics, queryDays);
+            return new RestResult<>(results);
+        } catch (Exception e) {
+            logger.debug("",e);
+        }
+        return new RestResult("异常出错");
+    }
+    private List<ClusterStatisticsNumResult> wrapStatisticNumByMonth(List<ClusterStatistics> clusterStatistics,List<String> queryDays) {
+        int index = 0;
+        ClusterStatistics lastItem = null;
+        List<ClusterStatisticsNumResult> results = new ArrayList<>();
+        for (String day : queryDays) {
+            ClusterStatisticsNumResult clusterStatisticsNumResult = null;
+            for (ClusterStatistics item : clusterStatistics) {
+
+                if (day.equals(item.getStatisticsTime())) {
+                    if(index==1) {
+                        lastItem = item;
+                        break;
+                    }
+
+                    clusterStatisticsNumResult = new ClusterStatisticsNumResult();
+                    clusterStatisticsNumResult.setCaptureTotal(item.getCaptureTotal());
+                    clusterStatisticsNumResult.setClusterTotal(item.getClusterTotal());
+                    clusterStatisticsNumResult.setNum(index);
+                    clusterStatisticsNumResult.setStatisticsTime(item.getStatisticsTime());
+                    if(lastItem!=null){
+                        clusterStatisticsNumResult.setAddCaptureNum(item.getCaptureTotal()-lastItem.getCaptureTotal());
+                        clusterStatisticsNumResult.setAddClusterNum(item.getClusterTotal()-lastItem.getClusterTotal());
+                    }
+                    lastItem = item;
+                    break;
+                }
+
+            }
+            if(index!=0) {
+                if (clusterStatisticsNumResult == null) {
+                    clusterStatisticsNumResult = new ClusterStatisticsNumResult();
+                    clusterStatisticsNumResult.setNum(index);
+                    lastItem = null;
+                }
+                results.add(clusterStatisticsNumResult);
+            }
+            index++;
+        }
+        return results;
+    }
+
+    @RequestMapping(value = "/clusterStatisticNum")
+    public Object clusterStatisticNum(@RequestBody BaseJson baseJson) {
+        try {
+            //Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
+            //  Criteria criteria=  Criteria.where("StatisticsTime").is(baseJson.getQtime());
+            List queryDay = new ArrayList();
+            if ("month".equals(baseJson.getType())) {
+                queryDay= DateUtil.getListTime("month", 12);
+            }else if ("week".equals(baseJson.getType())) {
+                queryDay= DateUtil.getListTime("week", 12);
+            }else if ("day".equals(baseJson.getType())) {
+                queryDay= DateUtil.getListTime("day", 12);
+            }
+            List<ClusterStatistics> clusterStatistics= calcNumByList(queryDay);
+            //Collections.sort(clusterStatistics);
+            List<ClusterStatisticsNumResult> results=wrapStatisticNum(clusterStatistics,queryDay);
+            return new RestResult<>(results);
+        } catch (Exception e) {
+            logger.debug("",e);
+        }
+        return new RestResult("异常出错");
+    }
+
+    private List<ClusterStatisticsNumResult> wrapStatisticNum(List<ClusterStatistics> clusterStatistics,List<String> queryDays) {
+        int index = 1;
+
+        List<ClusterStatisticsNumResult> results = new ArrayList<>();
+        for (String day : queryDays) {
+            ClusterStatisticsNumResult clusterStatisticsNumResult = null;
+            for (ClusterStatistics item : clusterStatistics) {
+                if (day.equals(item.getStatisticsTime())) {
+                    clusterStatisticsNumResult = new ClusterStatisticsNumResult();
+                    clusterStatisticsNumResult.setCaptureTotal(item.getCaptureTotal());
+                    clusterStatisticsNumResult.setClusterTotal(item.getClusterTotal());
+                    clusterStatisticsNumResult.setNum(index);
+                    clusterStatisticsNumResult.setStatisticsTime(item.getStatisticsTime());
+                    break;
+                }
+
+            }
+            if (clusterStatisticsNumResult == null) {
+                clusterStatisticsNumResult=new ClusterStatisticsNumResult();
+                clusterStatisticsNumResult.setNum(index);
+            }
+
+            results.add(clusterStatisticsNumResult);
+            index++;
+        }
+        return results;
+    }
+
+
+    private List<ClusterStatistics> calcNumByList(List<String> days) {
+        Criteria matchCondition= Criteria.where("StatisticsTime").in(days);
+        Query query = new Query(matchCondition);
+        List<ClusterStatistics> clusterStatistics= mongoTemplate.find(query, ClusterStatistics.class);
+        //Collections.sort(clusterStatistics);
+        return clusterStatistics;
+    }
+
+    private ClusterStatistics findCalcNumByDay(String day) {
+        Criteria matchCondition= Criteria.where("StatisticsTime").is(day);
+        Query query = new Query(matchCondition);
+        ClusterStatistics clusterStatistics= mongoTemplate.findOne(query, ClusterStatistics.class);
+        //Collections.sort(clusterStatistics);
+        return clusterStatistics;
+    }
+
+    private Long calcNum(String beginTime, String endTime) {
+        GroupOperation groupOperation;
+        ProjectionOperation projectionOperation;
+        Criteria matchCondition= Criteria.where("StatisticsTime").gte(beginTime).lte(endTime);
+        Query query = new Query(matchCondition);
+        List<ClusterStatistics> clusterStatistics= mongoTemplate.find(query, ClusterStatistics.class);
+        return 1L;
+
     }
 
 

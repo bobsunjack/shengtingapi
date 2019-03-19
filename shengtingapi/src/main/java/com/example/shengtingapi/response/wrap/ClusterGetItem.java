@@ -1,6 +1,6 @@
 package com.example.shengtingapi.response.wrap;
 
-public class ClusterGetItem {
+public class ClusterGetItem implements Comparable<ClusterGetItem>{
     private String cameraId;
     private String regionId;
     private String captureTime;
@@ -89,5 +89,10 @@ public class ClusterGetItem {
 
     public void setImgBigUrl(String imgBigUrl) {
         this.imgBigUrl = imgBigUrl;
+    }
+
+    @Override
+    public int compareTo(ClusterGetItem o) {
+        return o.captureTime.compareTo(this.captureTime);
     }
 }

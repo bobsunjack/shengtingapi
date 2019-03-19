@@ -10,6 +10,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@EnableScheduling
 public class MongoCacheExecute implements CommandLineRunner {
     public static Logger logger = LoggerFactory.getLogger(MongoCacheExecute.class);
     @Autowired
@@ -34,16 +37,27 @@ public class MongoCacheExecute implements CommandLineRunner {
 
         List<CameraInfo> cameraInfoList1 = cameraInfoRepository.findAll();
         for (CameraInfo cameraInfo : cameraInfoList1) {
-            logger.error("region list----------"+cameraInfo.getCameraId() + cameraInfo.getRegionId());
+            logger.debug("region list----------"+cameraInfo.getCameraId() + cameraInfo.getRegionId());
             CAMERAINFOMAP.put(cameraInfo.getCameraId() + cameraInfo.getRegionId(), cameraInfo);
         }
 
+        initPageCount();
+
+    }
+
+    private void initPageCount() {
         cachePageNum(1L, 2L);
         cachePageNum(2L, 51L);
         cachePageNum(51L, 101L);
         cachePageNum(101L, -1L);
-
     }
+
+    @Scheduled(cron = "${task_pagecount_start_time} * * ?")//定时执行 ，不再加时间判断
+    public void taskPageCount() {
+        initPageCount();
+        logger.debug("-----taskPageCount");
+    }
+
 
     public static CameraInfo getItem(String cameraId, String regionId) {
         logger.error("region----------"+cameraId+"_"+regionId);
@@ -73,6 +87,14 @@ public class MongoCacheExecute implements CommandLineRunner {
         Long count = CLUSTERINFOPAGE.get(beginClusterTotal + "_" + endClusterTotal);
         if (count == null) {
             return null;
+        }
+        return count;
+    }
+
+    public static Long getClusterInfoPageTotal() {
+        Long count = 0L;
+        for (Long itemCount : CLUSTERINFOPAGE.values()) {
+            count += itemCount;
         }
         return count;
     }

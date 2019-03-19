@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "ClusterStatistics")
-public class ClusterStatistics {
+public class ClusterStatistics implements Comparable<ClusterStatistics>{
     @Id
     private String id;
     private Long CaptureTotal;
@@ -41,5 +41,10 @@ public class ClusterStatistics {
 
     public void setClusterTotal(Long clusterTotal) {
         ClusterTotal = clusterTotal;
+    }
+
+    @Override
+    public int compareTo(ClusterStatistics o) {
+        return o.getStatisticsTime().compareTo(this.getStatisticsTime());
     }
 }

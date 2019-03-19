@@ -5,14 +5,19 @@ import com.example.shengtingapi.json.BaseJson;
 import com.example.shengtingapi.response.clusterget.ClusterGetResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterResponse;
 import com.example.shengtingapi.response.clustersearch.ClusterSearchResponse;
+import com.example.shengtingapi.response.wrap.ClusterGetItem;
 import com.example.shengtingapi.util.DateUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TestFile {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         System.out.println(DateUtil.convertToTZTime("2013-01-01 11:11:11"));
        // byte[] bytes = getContent("I:\\log\\search.txt");
         /*byte[] bytes = getContent("I:\\log\\s1.txt");
@@ -31,6 +36,23 @@ public class TestFile {
         ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
         obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
         System.out.println(obj);*/
+        System.out.println(DateUtil.getQtimeStrByDiffDay(-1));
+        System.out.println(DateUtil.getQtimeStrByMonthLastDay(-1));
+
+        System.out.println(DateUtil.getListTime("day",12).toString());
+        System.out.println(DateUtil.getListTime("week",12).toString());
+        System.out.println(DateUtil.getListTime("month",12).toString());
+
+        ClusterGetItem item1 = new ClusterGetItem();
+        item1.setCaptureTime("2019-03-01T00:45:110Z");
+        ClusterGetItem item2 = new ClusterGetItem();
+        item2.setCaptureTime("2019-03-01T00:46:110Z");
+        List<ClusterGetItem> calclist = new ArrayList();
+        calclist.add(item1);
+        calclist.add(item2);
+        Collections.sort(calclist);
+
+
         "182".split(",");
         BaseJson baseJson = new BaseJson();
         System.out.println(JSON.toJSONString(baseJson));
