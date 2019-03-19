@@ -92,7 +92,7 @@ public class ReleaseController extends BaseController {
                 orderField = "CaptureTime";
             }
             logger.debug("-----------base" + orderField);
-            if (baseJson.getOrderType().equals("-1")) {
+            if (baseJson.getOrderType().equals(-1)) {
                // sortOperation = sort(Sort.Direction.DESC, orderField);
                 sortOperation   =  new Sort(new Sort.Order(Sort.Direction.DESC, orderField));
             } else {
