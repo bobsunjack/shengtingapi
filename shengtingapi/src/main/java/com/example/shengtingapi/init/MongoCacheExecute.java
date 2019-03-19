@@ -60,7 +60,7 @@ public class MongoCacheExecute implements CommandLineRunner {
 
 
     public static CameraInfo getItem(String cameraId, String regionId) {
-        logger.error("region----------"+cameraId+"_"+regionId);
+        logger.debug("region----------"+cameraId+"_"+regionId);
         CameraInfo cameraInfo = CAMERAINFOMAP.get(cameraId + regionId);
         if (cameraInfo != null) {
             return cameraInfo;
@@ -76,14 +76,14 @@ public class MongoCacheExecute implements CommandLineRunner {
         }
         Query query = new Query(matchCondition);
         Long count=mongoTemplate.count(query, ClusterInfo.class);
-        logger.error(beginClusterTotal + "_" + endClusterTotal+count);
+        logger.debug(beginClusterTotal + "_" + endClusterTotal+count);
         CLUSTERINFOPAGE.put(beginClusterTotal + "_" + endClusterTotal,count);
-        logger.error(CLUSTERINFOPAGE.get(beginClusterTotal + "_" + endClusterTotal)+"--count");
+        logger.debug(CLUSTERINFOPAGE.get(beginClusterTotal + "_" + endClusterTotal)+"--count");
 
     }
 
     public static Long getClusterInfoPage(Long beginClusterTotal,Long endClusterTotal) {
-        logger.error("region----------"+beginClusterTotal+"_"+endClusterTotal);
+        logger.debug("region----------"+beginClusterTotal+"_"+endClusterTotal);
         Long count = CLUSTERINFOPAGE.get(beginClusterTotal + "_" + endClusterTotal);
         if (count == null) {
             return null;
