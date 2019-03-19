@@ -12,6 +12,16 @@ public class CameraInfo {
     private String Lng;
     private String Lat;
 
+    public CameraInfo() {
+        this.area = "";
+        this.cameraName = "";
+        this.cameraId = "";
+        this.regionName = "";
+        this.regionId = "";
+        Lng = "0";
+        Lat = "0";
+    }
+
     public String getLng() {
         return Lng;
     }

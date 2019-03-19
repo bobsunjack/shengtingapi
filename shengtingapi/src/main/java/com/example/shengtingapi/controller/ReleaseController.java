@@ -245,14 +245,21 @@ public class ReleaseController extends BaseController {
     @RequestMapping(value = "/onePersonList")
     public Object onePersonList(@RequestBody BaseJson baseJson) {
         try {
+            logger.error("one personList clusterId list:"+baseJson.getClusterId());
             String[] clusters=baseJson.getClusterId().split(",");
             List<ClusterGetItem> calclist = new ArrayList();
             for(String clusterId:clusters) {
+                logger.error("one personList clusterId:"+clusterId);
+                if(clusterId==null||clusterId.trim().equals(""))
+                {
+                    continue;
+                }
                 baseJson.setClusterId(clusterId);
+                logger.error("basejson clusterId:"+baseJson.getClusterId());
                 personAll(baseJson, calclist);
             }
             ClusterGetResult clusterGetResult= new ClusterGetResult(calclist, new Long(calclist.size()));
-            return new RestResult<>(clusterGetResult);
+            return  JSON.toJSONString(new RestResult<>(clusterGetResult));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -266,6 +273,8 @@ public class ReleaseController extends BaseController {
             String param = searchGetParamAll(pageNum,pageSize,baseJson.getClusterId(),baseJson.getStartTime(),baseJson.getEndTime());
             String url = realUrlClusterGet(ClusterGet,baseJson.getClusterId()) + "?" + param;
             String content = HttpClientUtil.getByUrl(url, null);
+            logger.error("personall:" + url);
+            logger.error("personall content:"+content);
             ClusterGetResponse obj = JSON.parseObject(content, ClusterGetResponse.class);
             convertClusterGetAll (obj,calclist);
             Long totalSize = obj.getPage().getTotal();

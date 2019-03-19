@@ -33,6 +33,7 @@ public class TestFile {
         System.out.println(obj);*/
         "182".split(",");
         BaseJson baseJson = new BaseJson();
+        System.out.println(JSON.toJSONString(baseJson));
         baseJson.setBeginClusterTotal(-1L);
 
         if (!baseJson.getBeginClusterTotal().equals(-1)) {
