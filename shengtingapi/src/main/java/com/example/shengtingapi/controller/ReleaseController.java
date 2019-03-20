@@ -116,6 +116,7 @@ public class ReleaseController extends BaseController {
             Long begin = System.currentTimeMillis();
             logger.debug("begin"+baseJson.getPageSize().intValue()+"--skip:"+(int) _index+";;;"+orderField);
             List<ClusterInfo> result=mongoTemplate.find(query,ClusterInfo.class);
+            convertClusterInfoTime(result);
             Long end = System.currentTimeMillis();
             logger.debug("end"+result.size()+"---"+(end-begin));
             return JSON.toJSONString(new RestResult<>(result));
@@ -123,6 +124,13 @@ public class ReleaseController extends BaseController {
             logger.error("",e);
         }
         return new RestResult("异常出错");
+    }
+
+    private void convertClusterInfoTime(List<ClusterInfo> list) {
+        for (ClusterInfo clusterInfo : list) {
+            clusterInfo.setCaptureTime(DateUtil.shangTangTimeToLong(clusterInfo.getCaptureTime()));
+        }
+
     }
 
     @RequestMapping(value = "/clusterInfoCount")

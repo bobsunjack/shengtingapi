@@ -127,4 +127,14 @@ public class DateUtil {
         }
         return "";
     }
+
+    public static Long shangTangTimeToLong(Long captureTime){
+        try {
+            Long time=captureTime+(60*1000*60*8);
+            return time;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
 }

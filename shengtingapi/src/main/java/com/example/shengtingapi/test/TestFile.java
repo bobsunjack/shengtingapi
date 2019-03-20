@@ -11,14 +11,18 @@ import com.example.shengtingapi.util.DateUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class TestFile {
     public static void main(String[] args) throws IOException, ParseException {
         System.out.println(DateUtil.convertToTZTime("2013-01-01 11:11:11"));
+        Long time = new Date().getTime();
+        System.out.println(DateUtil.shangTangTimeToLong(time)+"");
        // byte[] bytes = getContent("I:\\log\\search.txt");
         /*byte[] bytes = getContent("I:\\log\\s1.txt");
         String content = new String(bytes);*/
