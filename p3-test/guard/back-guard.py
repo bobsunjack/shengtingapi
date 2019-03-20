@@ -1,7 +1,3 @@
-import tkinter
-from tkinter import *
-import tkinter.messagebox
-import argparse
 import socket
 import sys
 import os
@@ -20,7 +16,10 @@ class ItemTask:
         self.path=path
         self.script=script
         self.auto=auto
-        self.dayTime=dayTime
+        if dayTime=="" or dayTime=="0":
+            self.dayTime=None
+        else:
+            self.dayTime=dayTime
 def scanPort(tasks):
     for task in tasks:
         scan_ports(task)
@@ -47,7 +46,7 @@ def scan_ports(task,isFirst=False):
         sock.connect((remote_ip,start_port))
         print ('Port' + str(start_port) + 'is ipen')
         sock.close()
-        task.btn.configure(bg="green", command=lambda: kill_process(task))
+        #task.btn.configure(bg="green", command=lambda: kill_process(task))
         "  task.btn.config(state=DISABLED)"
         "sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)"
     except  Exception as e:
@@ -57,15 +56,15 @@ def scan_ports(task,isFirst=False):
             if task.auto:
                  start_process(task)
             print(str(e)+"port:"+str(start_port))
-            task.btn.configure(bg="gray", command=lambda: start_process(task))
+            #task.btn.configure(bg="gray", command=lambda: start_process(task))
             pass
 
 def callback():
-    tkinter.messagebox.showinfo("Python command","人生苦短、我用Python")
+    print("Python command","人生苦短、我用Python")
 
 def start_process(task):
     status = os.system("start /D \""+task.path+"\" "+task.script)
-    task.btn.configure(bg="green", command=lambda: kill_process(task))
+   # task.btn.configure(bg="green", command=lambda: kill_process(task))
     print(status)
 def kill_process(task):
     port=task.port
@@ -74,7 +73,7 @@ def kill_process(task):
     str_list = ret.read()
     ret_list = regex.split(str_list)
     process_pid = ret_list[5]
-    task.btn.configure(bg="gray", command=lambda: start_process(task))
+   # task.btn.configure(bg="gray", command=lambda: start_process(task))
     os.system("taskkill /pid "+process_pid+" -t -f ")
 
 ##03:00:00 daytime
@@ -128,11 +127,11 @@ with open('b.txt') as file_object:
             items.append(True);
         tasks.append(ItemTask(items[0],items[1],items[2],items[3],items[4],items[5]))
 
-root = tkinter.Tk()
+#root = tkinter.Tk()
 for task in tasks:
-    btn = Button(root, text=task.name, fg="blue",bd=2,width=28,command= lambda: kill_process(task))
-    btn.pack();
-    task.setBtn(btn);
+    #btn = Button(root, text=task.name, fg="blue",bd=2,width=28,command= lambda: kill_process(task))
+    #btn.pack();
+    #task.setBtn(btn);
     scan_ports(task,True);
 
 initDayService(tasks)
@@ -141,7 +140,7 @@ initDayService(tasks)
 timer = threading.Timer(3, scanPort,[tasks])
 timer.start()
 # 进入消息循环
-root.mainloop()
+#root.mainloop()
 """
 btn2 = Button(root, text="设置command事件调用命令", fg="green",bd=2,width=28,command=callback)
 btn2.pack();
