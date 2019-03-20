@@ -114,4 +114,17 @@ public class DateUtil {
         c.set(Calendar.DATE, day +add);
         return c.getTime();
     }
+
+    public static String shangTangTimeToStr(String captureTime){
+        try {
+            String captureTime1=captureTime.replace("T", " ").replace("Z", "");
+            SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = sdfTime.parse(captureTime1);
+            Long time=date.getTime()+(60*1000*60*8);
+           return sdfTime.format(new Date(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

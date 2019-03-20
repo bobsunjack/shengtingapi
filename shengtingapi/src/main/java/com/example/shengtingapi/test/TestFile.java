@@ -65,11 +65,21 @@ public class TestFile {
         Long size = new Double( Math.ceil(10 * 1.0 / 3)).longValue();
         System.out.println();
 
-        byte[] bytes = getContent("I:\\log\\search1.txt");
+     /*   byte[] bytes = getContent("I:\\log\\search1.txt");
         String content = new String(bytes);
+
         ClusterSearchResponse obj = JSON.parseObject(content, ClusterSearchResponse.class);
        /// obj.getCluster().getResults().get(0).getObject_id().getCaptured_time_normal();//.getPortrait_image().getUrl();
-        System.out.println(obj);
+        System.out.println(obj);*/
+
+        byte[] bytes = getContent("I:\\log\\sysinfo.txt");
+        String content = new String(bytes);
+
+        int begin = content.indexOf("features") +11;
+        int end = content.indexOf("\"",begin) ;
+        String count = content.substring(begin, end);
+        System.out.println(count);
+
     }
 
 

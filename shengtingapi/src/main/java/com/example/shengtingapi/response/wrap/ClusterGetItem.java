@@ -1,5 +1,9 @@
 package com.example.shengtingapi.response.wrap;
 
+import com.example.shengtingapi.util.DateUtil;
+
+import java.util.Date;
+
 public class ClusterGetItem implements Comparable<ClusterGetItem>{
     private String cameraId;
     private String regionId;
@@ -65,7 +69,8 @@ public class ClusterGetItem implements Comparable<ClusterGetItem>{
 
     public String getCaptureTime() {
         if (captureTime != null) {
-            return captureTime.replace("T", " ").replace("Z", "");
+            return DateUtil.shangTangTimeToStr(captureTime);
+            //return captureTime.replace("T", " ").replace("Z", "");
         } else {
             return captureTime;
         }

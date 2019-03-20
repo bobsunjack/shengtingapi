@@ -458,7 +458,7 @@ public class ReleaseController extends BaseController {
             List<ClusterStatisticsNumResult> results=  wrapStatisticNumByMonth(clusterStatistics, queryDays);
             return new RestResult<>(results);
         } catch (Exception e) {
-            logger.debug("",e);
+            logger.error("",e);
         }
         return new RestResult("异常出错");
     }
@@ -526,7 +526,7 @@ public class ReleaseController extends BaseController {
             List<ClusterStatisticsNumResult> results=wrapStatisticNum(clusterStatistics,queryDay);
             return new RestResult<>(results);
         } catch (Exception e) {
-            logger.debug("",e);
+            logger.error("",e);
         }
         return new RestResult("异常出错");
     }
@@ -593,7 +593,33 @@ public class ReleaseController extends BaseController {
         mongoCacheExecute.taskPageCount();
     }
 
+    @RequestMapping(value = "/captureNum")
+    public Object captureNum() {
+        try {
+            String param = systemInfoParam();
+            String url = realUrlClusterGet(SYSTEMINFO,"") + "?" + param;
+            logger.debug("captureNum:"+url);
+            String content = HttpClientUtil.getByUrl(url, null);
+            logger.debug("captureNum:" + content);
+            int begin = content.indexOf("features") +11;
+            int end = content.indexOf("\"",begin) ;
+            String count = content.substring(begin, end);
+            logger.debug("captureNum count:" + count);
+            return new RestResult<>(new Long(count));
+        } catch (Exception e) {
+            logger.error("",e);
+        }
+        return new RestResult<>("异常出错");
+    }
 
+    private String systemInfoParam() {
+        Map map = new HashMap();
+        map.put("object_type", BaseController.OBJECT_TYPE);
+        map.put("feature_version", BaseController.FEATURE_VERSION);
+        String jsonParam = MapUrlParamsUtils.getUrlParamsByMap(map);
+        logger.error("param:" + jsonParam);
+        return jsonParam;
+    }
 
 
 }
