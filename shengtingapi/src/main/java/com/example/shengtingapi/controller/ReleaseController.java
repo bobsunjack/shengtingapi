@@ -274,7 +274,7 @@ public class ReleaseController extends BaseController {
             if (calclist.size() > 0) {
                 Collections.sort(calclist);
             }
-            logger.debug("sort----"+(System.currentTimeMillis()-begin)+calclist.size()+calclist.get(0).getCaptureTime()+"next="+calclist.get(1).getCaptureTime());
+            ///logger.debug("sort----"+(System.currentTimeMillis()-begin)+calclist.size()+calclist.get(0).getCaptureTime()+"next="+calclist.get(1).getCaptureTime());
             ClusterGetResult clusterGetResult= new ClusterGetResult(calclist, new Long(calclist.size()));
             String content = JSON.toJSONString(new RestResult<>(clusterGetResult));
             logger.debug("sort1----" + content);
