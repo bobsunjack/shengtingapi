@@ -2,10 +2,7 @@ package com.example.shengtingapi.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class DateUtil {
 
@@ -54,8 +51,8 @@ public class DateUtil {
         return formatDate.format(cal_1.getTime());
     }
 
-    public static List<String> getListTime(String type, int range) throws ParseException {
-        List<String> datas = new ArrayList<>();
+    public static HashSet<String> getListTime(String type, int range) throws ParseException {
+        HashSet<String> datas = new LinkedHashSet<>();
         range = -range;
         if ("month".equals(type)) {
             for (int index = range; index < 0;index++) {

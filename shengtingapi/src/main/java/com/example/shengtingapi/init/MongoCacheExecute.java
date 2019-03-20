@@ -47,15 +47,15 @@ public class MongoCacheExecute implements CommandLineRunner {
 
     private void initPageCount() {
         cachePageNum(1L, 2L);
-        cachePageNum(2L, 51L);
-        cachePageNum(51L, 101L);
+        cachePageNum(2L, 11L);
+        cachePageNum(11L, 101L);
         cachePageNum(101L, -1L);
     }
 
     @Scheduled(cron = "${task_pagecount_start_time} * * ?")//定时执行 ，不再加时间判断
     public void taskPageCount() {
         initPageCount();
-        logger.debug("-----taskPageCount");
+        logger.error("-----taskPageCount");
     }
 
 

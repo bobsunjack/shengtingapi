@@ -52,6 +52,9 @@ public class ReleaseController extends BaseController {
     @Autowired
     ClusterInfoRepository clusterInfoRepository;
 
+    @Autowired
+    MongoCacheExecute mongoCacheExecute;
+
     @RequestMapping(value = "/clusterStatistic")
     public Object clusterStatistic(@RequestBody BaseJson baseJson) {
         try {
@@ -84,7 +87,12 @@ public class ReleaseController extends BaseController {
             Criteria matchCondition = Criteria.where("ClusterTotal").gte(baseJson.getBeginClusterTotal());
             if (!baseJson.getEndClusterTotal().equals(-1L)) {
                 matchCondition.lt(baseJson.getEndClusterTotal());
+                if (baseJson.getBeginClusterTotal().equals(1L) && baseJson.getEndClusterTotal().equals(2L)) {
+                    matchCondition = Criteria.where("ClusterTotal").is(baseJson.getBeginClusterTotal());
+                }
             }
+
+
             logger.debug("-----------baseJson.getBeginClusterTotal()"+baseJson.getBeginClusterTotal()+","+baseJson.getEndClusterTotal());
 
             String orderField = baseJson.getOrderField() != null ? baseJson.getOrderField() : "CaptureTime";
@@ -500,14 +508,19 @@ public class ReleaseController extends BaseController {
         try {
             //Long qtime = DateUtil.getTimeByDay(baseJson.getQtime());
             //  Criteria criteria=  Criteria.where("StatisticsTime").is(baseJson.getQtime());
-            List queryDay = new ArrayList();
+            HashSet queryDay = new LinkedHashSet();
             if ("month".equals(baseJson.getType())) {
                 queryDay= DateUtil.getListTime("month", 12);
+                queryDay.add(DateUtil.getQtimeStrByDiffDay(-1));
+                if(queryDay.size()>12){
+                    queryDay.remove(queryDay.toArray()[0]);
+                }
             }else if ("week".equals(baseJson.getType())) {
                 queryDay= DateUtil.getListTime("week", 12);
             }else if ("day".equals(baseJson.getType())) {
                 queryDay= DateUtil.getListTime("day", 12);
             }
+
             List<ClusterStatistics> clusterStatistics= calcNumByList(queryDay);
             //Collections.sort(clusterStatistics);
             List<ClusterStatisticsNumResult> results=wrapStatisticNum(clusterStatistics,queryDay);
@@ -518,7 +531,7 @@ public class ReleaseController extends BaseController {
         return new RestResult("异常出错");
     }
 
-    private List<ClusterStatisticsNumResult> wrapStatisticNum(List<ClusterStatistics> clusterStatistics,List<String> queryDays) {
+    private List<ClusterStatisticsNumResult> wrapStatisticNum(List<ClusterStatistics> clusterStatistics,HashSet<String> queryDays) {
         int index = 1;
 
         List<ClusterStatisticsNumResult> results = new ArrayList<>();
@@ -548,7 +561,7 @@ public class ReleaseController extends BaseController {
     }
 
 
-    private List<ClusterStatistics> calcNumByList(List<String> days) {
+    private List<ClusterStatistics> calcNumByList(HashSet<String> days) {
         Criteria matchCondition= Criteria.where("StatisticsTime").in(days);
         Query query = new Query(matchCondition);
         List<ClusterStatistics> clusterStatistics= mongoTemplate.find(query, ClusterStatistics.class);
@@ -572,6 +585,12 @@ public class ReleaseController extends BaseController {
         List<ClusterStatistics> clusterStatistics= mongoTemplate.find(query, ClusterStatistics.class);
         return 1L;
 
+    }
+
+
+    @RequestMapping(value = "/clusterNotify")
+    public void clusterStatisticNum() {
+        mongoCacheExecute.taskPageCount();
     }
 
 
