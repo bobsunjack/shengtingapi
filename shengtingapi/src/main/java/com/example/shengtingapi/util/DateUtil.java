@@ -1,10 +1,14 @@
 package com.example.shengtingapi.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DateUtil {
+    public static Logger logger = LoggerFactory.getLogger(DateUtil.class);
 
     public final static SimpleDateFormat sdfDay = new SimpleDateFormat(
             "yyyy-MM-dd");
@@ -28,8 +32,16 @@ public class DateUtil {
     }
 
     public static String convertToTZTime(String normalTime) {
-        return normalTime.replace(" ", "T") + ".021Z";
-
+        try {
+            SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = sdfTime.parse(normalTime);
+            Long time=date.getTime()-(60*1000*60*8);
+            String convertTime= sdfTime.format(new Date(time));
+            return convertTime.replace(" ", "T") + ".021Z";
+        } catch (Exception e) {
+            logger.error("时长差"+normalTime,e);
+        }
+        return "";
     }
 
 

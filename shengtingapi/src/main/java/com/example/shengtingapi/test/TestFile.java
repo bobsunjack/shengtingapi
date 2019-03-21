@@ -22,7 +22,7 @@ public class TestFile {
     public static void main(String[] args) throws IOException, ParseException {
         System.out.println(DateUtil.convertToTZTime("2013-01-01 11:11:11"));
         Long time = new Date().getTime();
-        System.out.println(DateUtil.shangTangTimeToLong(time)+"");
+        System.out.println(DateUtil.convertToTZTime("2013-01-01 11:11:11"));
        // byte[] bytes = getContent("I:\\log\\search.txt");
         /*byte[] bytes = getContent("I:\\log\\s1.txt");
         String content = new String(bytes);*/
