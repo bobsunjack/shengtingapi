@@ -1,6 +1,7 @@
-package com.example.shengtingapi.controller;
+package com.example.shengtingapi.controller.test;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.controller.BaseController;
 import com.example.shengtingapi.db.mongo.dao.CameraInfoRepository;
 import com.example.shengtingapi.db.mongo.entity.CameraInfo;
 import com.example.shengtingapi.dto.*;
@@ -31,7 +32,7 @@ public class TestController extends BaseController {
     public Object mongoinit() {
         List<String> items= TestFile2.toArrayByFileReader1("E:\\TEST\\runoob.txt");
         for (String item : items) {
-            String unit[] = item.split("\t");
+            String[] unit = item.split("\t");
             CameraInfo info = new CameraInfo();
             info.setCameraName(unit[0]);
             info.setCameraId(unit[1]);

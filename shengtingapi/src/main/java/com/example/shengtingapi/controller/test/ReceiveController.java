@@ -1,6 +1,7 @@
-package com.example.shengtingapi.controller;
+package com.example.shengtingapi.controller.test;
 
 import com.alibaba.fastjson.JSON;
+import com.example.shengtingapi.controller.BaseController;
 import com.example.shengtingapi.dto.Image;
 import com.example.shengtingapi.dto.ImageExtract;
 import com.example.shengtingapi.util.HttpClientUtil;

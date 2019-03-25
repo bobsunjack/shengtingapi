@@ -1,4 +1,4 @@
-package com.example.shengtingapi.controller;
+package com.example.shengtingapi.controller.test;
 
 import com.example.shengtingapi.dto.RestResult;
 import org.springframework.web.bind.annotation.RequestMapping;
